@@ -21,4 +21,26 @@ public class Player {
     public int getCredits() {
         return credits;
     }
+
+    public int getReputation() {
+        return reputation;
+    }
+
+    public Ship getShip() {
+        return ship;
+    }
+
+    public boolean spendCredits(int amount) {
+        if (credits >= amount) {
+            credits -= amount;
+            return true;
+        } else {
+            System.out.println("Not enough credits.");
+            return false;
+        }
+    }
+
+    //METHOD buyItem(Item, price))
+
+    //METHOD sellItem(Item, price))
 }
