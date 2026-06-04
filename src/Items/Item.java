@@ -1,3 +1,4 @@
+package Items;
 // Abstract Item class (empty shell)
 public abstract class Item {
     private String name;
