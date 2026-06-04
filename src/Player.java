@@ -40,7 +40,7 @@ public class Player {
         }
     }
 
-    //METHOD buyItem(Item, price))
-
-    //METHOD sellItem(Item, price))
+    public void addReputation(int amount) {
+        reputation += amount;
+    }
 }

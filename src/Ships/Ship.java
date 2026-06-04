@@ -1,5 +1,6 @@
 package Ships;
-import Java.util.*; import java.util.*;
+import java.util.*;
+import Items.Item;
 // Abstract Ship class (empty shell for now)
 public abstract class Ship {
     private ArrayList<Item> cargo;
@@ -10,38 +11,71 @@ public abstract class Ship {
     private int speed;
     private int cargoCapacity;
 
-    public Ship(String name, int fuel, int maxFuel, int fuelUseRate, int speed, int cargoCapacity) {
+    public Ship(String name, int fuel, int maxFuel, int fuelUseRate, int speed, int cargoCapacity, ArrayList<Item> cargo) {
         this.name = name;
         this.fuel = fuel;
-        this.maxFuel = fuel;
+        this.maxFuel = maxFuel;
         this.fuelUseRate = fuelUseRate;
         this.speed = speed;
         this.cargoCapacity = cargoCapacity;
+        this.cargo = cargo == null ? new ArrayList<>() : cargo;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    public int fuel() {
+    public int getFuel() {
         return fuel;
     }
 
-    public int maxFuel() {
+    public int getMaxFuel() {
         return maxFuel;
     }
 
-    public int fuelUseRate() {
+    public int getFuelUseRate() {
         return fuelUseRate;
     }
 
-    public int speed() {
+    public int getSpeed() {
         return speed;
     }
 
-    public int cargoCapacity() {
+    public int getCargoCapacity() {
         return cargoCapacity;
     }
 
-    public void 
+    public void refuel(int amount) {
+        if(amount > maxFuel) {
+            fuel = maxFuel;
+        } else {
+            fuel += amount;
+        }
+    }
+
+    public boolean addItem(Item item) {
+        if(cargo.size() < cargoCapacity ) {
+            cargo.add(item);
+                System.out.println(item.getName() + "has been added to cargo!");
+            return true;
+        } else {
+                System.out.println("Not enough capacity!");
+            return false;
+        }
+    }
+
+    public boolean removeItem(Item item) {
+        if(cargo.contains(item)) {
+            cargo.remove(item);
+                System.out.println(item.getName() + "has been removed from cargo!");
+            return true;
+        } else {
+                System.out.println("There is nothing to remove.");
+            return false;
+        }
+    }
+
+    public void useFuel(int amount) {
+        
+    }
 }

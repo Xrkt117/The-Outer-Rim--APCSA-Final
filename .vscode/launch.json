@@ -9,7 +9,7 @@
             "name": "Launch External Terminal",
             "request": "launch",
             "console": "externalTerminal",
-            "mainClass": ""
+            "mainClass": "TheOuterRimGame"
         },
         {
             "type": "java",
