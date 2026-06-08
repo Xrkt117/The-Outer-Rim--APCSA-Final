@@ -2,14 +2,20 @@ package Items;
 // Abstract Item class (empty shell)
 public abstract class Item {
     private String name;
+    public String description;
     private int basePrice;
     private int quantity;
     //private String description;
 
-    public Item(String name, int price, int quantity) {
+    public Item(String name, int price, int quantity, String description) {
         this.name = name;
         this.basePrice = price;
         this.quantity = quantity;
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getName() {

@@ -3,7 +3,6 @@ package Planets;
 import java.util.*;
 import Items.Item;
 
-// Abstract Planet class (empty shell)
 public abstract class Planet {
     private String name;
     private String description;

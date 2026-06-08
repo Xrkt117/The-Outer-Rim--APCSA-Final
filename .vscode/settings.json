@@ -1,12 +1,12 @@
 {
     "git.ignoreLimitWarning": true,
     "editor.quickSuggestions": {
-        "other": false,
-        "comments": false,
-        "strings": false
+        "other": true,
+        "comments": true,
+        "strings": true
     },
-    "editor.suggestOnTriggerCharacters": false,
-    "editor.acceptSuggestionOnCommitCharacter": false,
-    "editor.parameterHints.enabled": false,
-    "editor.inlineSuggest.enabled": false
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.acceptSuggestionOnCommitCharacter": true,
+    "editor.parameterHints.enabled": true,
+    "editor.inlineSuggest.enabled": true
 }

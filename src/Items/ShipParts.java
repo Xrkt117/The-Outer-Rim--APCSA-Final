@@ -1,5 +1,13 @@
 package Items;
-// ShipParts item (empty shell)
+// Medicine item (empty shell)
 public class ShipParts extends Item {
 
+    public ShipParts(int quantity) {
+        super(
+            "Ship Parts", 
+            67, 
+            quantity, 
+            "Rarely exciting until something breaks"
+        );
+    }
 }
