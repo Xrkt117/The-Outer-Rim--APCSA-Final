@@ -7,7 +7,7 @@ public class Fuel extends Item {
             "Fuel", 
             20, 
             quantity, 
-            "Turns money into forward motion"
+            "Fluid propellant" 
         );
     }
 }

@@ -78,4 +78,24 @@ public abstract class Ship {
     public void useFuel(int amount) {
         
     }
+
+    public void displayCargo() {
+        System.out.println("Cargo:");
+        if (cargo.isEmpty()) {
+            System.out.println("- Empty");
+        } else {
+            for (Item item : cargo) {
+                System.out.println("- " + item.getName());
+            }
+        }
+    }
+
+    public void displayShipInfo() {
+        System.out.println("Ship Name: " + name);
+        System.out.println("Fuel: " + fuel + "/" + maxFuel);
+        System.out.println("Speed: " + speed);
+        System.out.println("Cargo Capacity: " + cargoCapacity);
+    }
+
+
 }

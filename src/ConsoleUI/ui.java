@@ -1,11 +1,11 @@
-package ui;
+package ConsoleUI;
 
 import java.util.Scanner;
 
-public final class ConsoleUI {
+public final class ui {
     private static final Scanner scanner = new Scanner(System.in);
 
-    private ConsoleUI() { }
+    private ui() { }
 
     public static void println(String s) { System.out.println(s); }
     public static void print(String s) { System.out.print(s); }
@@ -13,6 +13,7 @@ public final class ConsoleUI {
 
     public static String prompt(String promptText) {
         System.out.print(promptText + " ");
+        System.out.println("> ");
         return scanner.nextLine();
     }
 

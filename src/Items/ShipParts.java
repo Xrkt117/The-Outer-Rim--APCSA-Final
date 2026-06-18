@@ -5,7 +5,7 @@ public class ShipParts extends Item {
     public ShipParts(int quantity) {
         super(
             "Ship Parts", 
-            67, 
+            65, 
             quantity, 
             "Rarely exciting until something breaks"
         );
