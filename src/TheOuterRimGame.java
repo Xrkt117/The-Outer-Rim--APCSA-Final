@@ -10,9 +10,6 @@ public class TheOuterRimGame {
     private Planet currentPlanet;
     private Scanner input;
 
-    String boldOn = "\u001B[1m";
-    String reset = "\u001B[0m";
-
     public static void main(String[] args) {
         TheOuterRimGame game = new TheOuterRimGame();
         try {
@@ -96,7 +93,7 @@ public class TheOuterRimGame {
     public void gameLoopBridge() {
         displayMenu();
         ui.println("[1] Ship Console");
-        ui.println("[2] Market Console");
+        ui.println("[2] Market");
         ui.println("[3] Travel");
         ui.println("[0] Quit");
         input();
@@ -186,12 +183,33 @@ public class TheOuterRimGame {
             }
         }
 
-    public void travelConsole() {
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   
+    private void travelConsole() {
         flush();
 
-        ui.println("--- Travel ---");
+        ui.println("\n------------------ Travel ------------------");
 
-        ui.println(" ");
+        ui.print(" .              +   .                .   . .     .  .\r\n" + //
+                        "                   .                    .       .     *\r\n" + //
+                        "  .       *                        . . . .  .   .  + .\r\n" + //
+                        "            \"You Are Here\"            .   .  +  . . .\r\n" + //
+                        ".                 |             .  .   .    .    . .\r\n" + //
+                        "                  |           .     .     . +.    +  .\r\n" + //
+                        "                 \\|/            .       .   . .\r\n" + //
+                        "        . .       V          .    * . . .  .  +   .\r\n" + //
+                        "           +      .           .   .      +\r\n" + //
+                        "                " + currentPlanet.getName() + "           .       . +  .+. .\r\n" + //
+                        "  .                      .     . + .  . .     .      .\r\n" + //
+                        "           .      .    .     . .   . . .        ! /\r\n" + //
+                        "      *             .    . .  +    .  .       - O -\r\n" + //
+                        "          .     .    .  +   . .  *  .       . / |\r\n" + //
+                        "               . + .  .  .  .. +  .\r\n" + //
+                        ".      .  .  .  *   .  *  . +..  .            *\r\n" + //
+                        " .      .   . .   .   .   . .  +   .    .            +");
+        ui.println("\n--------------------------------------------");
+        ui.println("\n\nFrom here, you can travel to the following planets:");
+
         for (Planet planet : planets) {
             if (planet != currentPlanet) {
                 ui.println("- " + planet.getName() + " ");
@@ -213,12 +231,24 @@ public class TheOuterRimGame {
             Planet selectedPlanet = planets.get(choice - 1);
             if (selectedPlanet == currentPlanet) {
                 ui.println("You are already on " + selectedPlanet.getName() + ".");
+                ui.pressAnyKey();
+                travelConsole();
             } else {
                 final int travelTime = Math.abs(currentPlanet.getDistance() - selectedPlanet.getDistance()); //time calculation based on distance
                 currentPlanet = selectedPlanet;
-                
+                player.getShip().useFuel(travelTime * 2); //fuel usage is calculated based on travel time, 2 fuel per AU
                 flush();
-
+                ui.println("   .       . \r\n" + //
+                                        " +  :      .\r\n" + //
+                                        "           :       _\r\n" + //
+                                        "       .   !   '  (_)\r\n" + //
+                                        "          ,|.' \r\n" + //
+                                        "-  -- ---(-O-`--- --  -\r\n" + //
+                                        "         ,`|'`.\r\n" + //
+                                        "       ,   !    .\r\n" + //
+                                        "           :       :  \" \r\n" + //
+                                        "           .     --+--\r\n" + //
+                                        " .:        .       !");
                 ui.println("Plotting course to next destination...");
                 try {
                     for (int i = 0; i < travelTime; i++) {
@@ -246,8 +276,5 @@ public class TheOuterRimGame {
                     "   |    |   |   Y  \\\\  ___/     /    |    \\|  |  / |  |  \\  ___/ |  | \\/     |    |   \\|  ||  Y Y  \\ \r\n" + //
                     "   |____|   |___|  / \\___  >    \\_______  /|____/  |__|   \\___  >|__|        |____|_  /|__||__|_|  / \r\n" + //
                     "                 \\/      \\/             \\/                    \\/                    \\/           \\/  ");
-    }    
-
-
-    
+    }     
 }

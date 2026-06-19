@@ -36,9 +36,7 @@ public abstract class Planet {
         market.add(item);
     }
 
-        public void displayMarket() {
-        System.out.println("Market on " + name + ":");
-
+     public void displayMarket() {
         for (Item item : market) {
             System.out.println("- " + item.getName() + " | Price: " + item.getBasePrice());
         }
