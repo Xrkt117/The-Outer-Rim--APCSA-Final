@@ -24,11 +24,30 @@ public final class ui {
             scanner.next();
         }
         int val = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
         return val;
     }
 
-    public static void banner(String title) {
-        System.out.println("=== " + title + " ===");
+    public static void flush() {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+    }
+
+    /**
+     * Waits for the user to press Enter. Use this to pause the game until the player continues.
+     * This is the simplest cross-platform approach; it prompts the user and reads the next line.
+     */
+    public static void pressAnyKey() {
+        System.out.println(" ");
+        System.out.println("[Press any key to continue]");
+        scanner.nextLine();
+    }
+
+    /**
+     * Same as pressAnyKey but allows a custom prompt string.
+     */
+    public static void pressAnyKey(String prompt) {
+        System.out.println(prompt);
+        scanner.nextLine();
     }
 }

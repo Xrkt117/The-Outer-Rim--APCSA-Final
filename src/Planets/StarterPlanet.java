@@ -2,9 +2,9 @@ package Planets;
 
 import Items.*;
 
-public class Earth extends Planet {
-    public Earth() {
-        super("Earth", "The center of the Outer Rim", 0);
+public class StarterPlanet extends Planet {
+    public StarterPlanet(String name) {
+        super(name, "The center of the Outer Rim", 0);
     }
 
     @Override

@@ -1,7 +1,8 @@
 package Ships;
+
 import java.util.*;
 import Items.Item;
-// Abstract Ship class (empty shell for now)
+
 public abstract class Ship {
     private ArrayList<Item> cargo;
     private String name;
@@ -80,7 +81,7 @@ public abstract class Ship {
     }
 
     public void displayCargo() {
-        System.out.println("Cargo:");
+        System.out.println("\nCargo:");
         if (cargo.isEmpty()) {
             System.out.println("- Empty");
         } else {
@@ -91,7 +92,7 @@ public abstract class Ship {
     }
 
     public void displayShipInfo() {
-        System.out.println("Ship Name: " + name);
+        System.out.println("\nShip Name: " + name);
         System.out.println("Fuel: " + fuel + "/" + maxFuel);
         System.out.println("Speed: " + speed);
         System.out.println("Cargo Capacity: " + cargoCapacity);

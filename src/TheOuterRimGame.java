@@ -2,6 +2,7 @@ import java.util.*;
 import Planets.Planet;
 import Items.*;
 import Ships.*;
+import ConsoleUI.*;
 
 public class TheOuterRimGame {
     private Player player;
@@ -17,7 +18,7 @@ public class TheOuterRimGame {
         try {
             game.setupGame();
         } catch (Exception e) {
-            System.out.println("An error occurred during game setup: " + e.getMessage());
+            ui.println("An error occurred during game setup: " + e.getMessage());
             return;
         }
         game.gameLoopBridge();
@@ -32,23 +33,24 @@ public class TheOuterRimGame {
         System.out.print("> ");
     }
 
+    public void flush() {
+        ui.flush();
+        title();
+    }
+
     public void setupGame() throws Exception {
-        System.out.println(" ______________.__              _________            __                     __________ .__           \r\n" + //
-                        " \\__    ___/|  |__    ____      \\_____  \\   __ __ _/  |_   ____ _______     \\______   \\|__|  _____   \r\n" + //
-                        "   |    |   |  |  \\ _/ __ \\      /   |   \\ |  |  \\\\   __\\_/ __ \\\\_  __ \\     |       _/|  | /     \\  \r\n" + //
-                        "   |    |   |   Y  \\\\  ___/     /    |    \\|  |  / |  |  \\  ___/ |  | \\/     |    |   \\|  ||  Y Y  \\ \r\n" + //
-                        "   |____|   |___|  / \\___  >    \\_______  /|____/  |__|   \\___  >|__|        |____|_  /|__||__|_|  / \r\n" + //
-                        "                 \\/      \\/             \\/                    \\/                    \\/           \\/  ");
-        
-          System.out.println("What is your name traveler?");
+        flush();
+          ui.println("What is your name traveler?");
           input();
             String name = input.nextLine();
-            System.out.println("Welcome, " + name + "!");
+            flush();
+            ui.println("Welcome, " + name + "!");
             Thread.sleep(500);
-            System.out.println("Select your spacecraft- \n [1] Scout \n [2] Balanced \n [3] Cargo");
+            ui.println(" ");
+            ui.println("Select your spacecraft- \n [1] Scout \n [2] Balanced \n [3] Cargo");
             input();
-            if (input.hasNextInt()) {
                 int choice = input.nextInt();
+                input.nextLine();
                 switch (choice) {
                     case 1:
                         player = new Player(name, 1000, 0, new ScoutShip());
@@ -60,139 +62,191 @@ public class TheOuterRimGame {
                         player = new Player(name, 1000, 0, new CargoShip());
                         break;
                     default:
-                        System.out.println("Invalid choice. Defaulting to Balanced.");
+                        ui.println("Invalid choice. Defaulting to Balanced.");
                         player = new Player(name, 1000, 0, new BalancedShip());
                 }
-            } 
-            flush();
-            System.out.println("You are currently on Nova-9, the center of the Outer Rim. From here, you can travel to various planets, trade goods, and build your reputation. Your goal is to become the most renowned trader in the Outer Rim. Good luck!");
-            gameLoopBridge();
 
-            
+                ui.println("\nYou have selected the " + player.getShip().getName() + ". It has a cargo capacity of " + player.getShip().getCargoCapacity() + " units and a fuel capacity of " + player.getShip().getMaxFuel() + " units.");
+                ui.pressAnyKey();
+
+            //planet declaration and initialization
+            currentPlanet = new Planets.StarterPlanet("Nova-9");
+            planets.add(currentPlanet);
+            Planet miningPlanet = new Planets.MiningPlanet("Caelum", 5);
+            planets.add(miningPlanet);
+            Planet militaryPlanet = new Planets.MilitaryPlanet("Fortress-7", 10);
+            planets.add(militaryPlanet);
+            Planet tradingPlanet = new Planets.TradePlanet("Aurora", 20);
+            planets.add(tradingPlanet);
+
+            flush();
+            ui.println("You are currently on " + currentPlanet.getName() + ", the center of the Outer Rim. From here, you can travel to various planets, trade goods, and build your reputation. Your goal is to become the most renowned trader in the Outer Rim. Good luck!");
+            ui.pressAnyKey();
+            gameLoopBridge();      
     }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+    //seperate bridge console display if I want to add more features to the selectable menu through progression, reputation, or other factors
     public void displayMenu() {
-        System.out.println("");
-        System.out.println(boldOn + "=== Bridge Console ===" + reset);
-        System.out.println(" ");
+        flush();
+        ui.println("=== Bridge Console ===");
+        ui.println("\nLocation: " +  currentPlanet.getName() + "\n");
     }
-
 
     public void gameLoopBridge() {
-            displayMenu();
-            System.out.println("[1] Ship Console");
-            System.out.println("[2] Market Console");
-            System.out.println("[3] Travel");
-            System.out.println("[0] Quit");
-            input();
-            if (!input.hasNextInt()) { input.nextLine();}
-            int choice = input.nextInt();
-            input.nextLine();
-            switch (choice) {
-                case 1:
-                    shipConsole();
-                    flush();
-                    break;
-                case 2:
-                    marketConsole();
-                    flush();
-                    break;
-                case 3:
-                    travel();
-                    flush();
-                    break;
-                case 0:
-                    System.out.println("Goodbye — safe travels.");
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid choice.");
+        displayMenu();
+        ui.println("[1] Ship Console");
+        ui.println("[2] Market Console");
+        ui.println("[3] Travel");
+        ui.println("[0] Quit");
+        input();
+        int choice = input.nextInt();
+        input.nextLine(); //prevents crashing if the user inputs a non-integer value
+        switch (choice) {
+            case 1:
+                shipConsole();
+                break;
+            case 2:
+                marketConsole();
+                break;
+            case 3:
+                travelConsole();
+                break;
+            case 0:
+                ui.println("Goodbye — safe travels.");
+                System.exit(0);
+            default:
+                ui.println("Invalid choice.");
             }
     }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  
+  //displays vital ship information, cargo, and other features that may be added in the future such as refueling, repairing, or upgrading the ship.
     private void shipConsole() {
-        while (true) {
-            System.out.println();
-            System.out.println("--- Ship Console ---");
-            System.out.println("[1] View ship info");
-            System.out.println("[2] View cargo");
-            System.out.println("[3] Refuel (stub)");
-            System.out.println("[0] Return to Bridge");
-            input();
-            if (!input.hasNextInt()) { input.nextLine(); continue; }
-            int c = input.nextInt();
-            input.nextLine();
-            switch (c) {
-                case 1:
-                    player.getShip().displayShipInfo();
-                    System.out.println("You have no ship.");
-                    break;
-                case 2:
-                    player.getShip().displayCargo();
-                    System.out.println("You have no ship.");
-                    break;
-                case 3:
-                    System.out.println("Refuel feature not implemented yet.");
-                    break;
-                case 0:
-                    gameLoopBridge(); // back to Bridge
-                default:
-                    System.out.println("Invalid choice.");
+        flush();
+        ui.println("--- Ship Console ---");
+        ui.println("[1] View ship info");
+        ui.println("[2] View cargo");
+        ui.println("[3] Refuel (stub)");
+        ui.println("[0] Return to Bridge");
+        input();
+        int c = input.nextInt();
+        input.nextLine();
+        switch (c) {
+            case 1:
+                player.getShip().displayShipInfo();
+                ui.pressAnyKey();
+                shipConsole();
+                break;
+             case 2:
+                player.getShip().displayCargo();
+                ui.pressAnyKey();
+                shipConsole();
+                break;
+            case 3:
+                ui.println("\nRefuel feature not implemented yet.");
+                ui.pressAnyKey();
+                shipConsole();
+                break;
+            case 0:
+                gameLoopBridge(); // back to Bridge
+            default:
+                ui.println("Invalid choice.");
+                ui.pressAnyKey();
+                shipConsole();
             }
         }
-    }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
    
     private void marketConsole() {
-        while (true) {
-            System.out.println();
-            System.out.println("--- Market ---");    
+            flush();
+            ui.println("--- " + currentPlanet.getName() + " Market ---");
+
+            ui.println(" ");
             currentPlanet.displayMarket();
-            System.out.println("[1] Buy item ()");
-            System.out.println("[2] Sell item ()");
-            System.out.println("[0] Return to Bridge");
+            ui.println(" ");
+
+            ui.println("[1] Buy item ()");
+            ui.println("[2] Sell item ()");
+            ui.println("[0] Return to Bridge");
             input();
-            if (!input.hasNextInt()) { input.nextLine(); continue; }
             int c = input.nextInt();
             input.nextLine();
             switch (c) {
                 case 1:
-                    System.out.println("Buy flow not implemented yet.");
+                    ui.println("\nBuy flow not implemented yet.");
                     break;
                 case 2:
-                    System.out.println("Sell flow not implemented yet.");
+                    ui.println("\nSell flow not implemented yet.");
                     break;
                 case 0:
-
-                    return; // back to Bridge
+                    gameLoopBridge(); // back to Bridge
                 default:
-                    System.out.println("Invalid choice.");
+                    ui.println("Invalid choice.");
             }
+        }
+
+    public void travelConsole() {
+        flush();
+
+        ui.println("--- Travel ---");
+
+        ui.println(" ");
+        for (Planet planet : planets) {
+            if (planet != currentPlanet) {
+                ui.println("- " + planet.getName() + " ");
+            }
+        }
+        ui.println(" ");
+
+        for (int i = 0; i < planets.size(); i++) {
+            Planet planet = planets.get(i);
+            ui.println("[" + (i + 1) + "] Travel to " + planet.getName() + " | Distance: " + Math.abs(currentPlanet.getDistance() - planet.getDistance()) + " AU");
+        }
+        ui.println("[0] Return to Bridge");
+        input();
+        int choice = input.nextInt();
+        input.nextLine();
+        if (choice == 0) {
+            gameLoopBridge(); // back to Bridge
+        } else if (choice > 0 && choice <= planets.size()) {
+            Planet selectedPlanet = planets.get(choice - 1);
+            if (selectedPlanet == currentPlanet) {
+                ui.println("You are already on " + selectedPlanet.getName() + ".");
+            } else {
+                final int travelTime = Math.abs(currentPlanet.getDistance() - selectedPlanet.getDistance()); //time calculation based on distance
+                currentPlanet = selectedPlanet;
+                
+                flush();
+
+                ui.println("Plotting course to next destination...");
+                try {
+                    for (int i = 0; i < travelTime; i++) {
+                        System.out.print(".");
+                        System.out.flush();
+                        Thread.sleep( 1000 / player.getShip().getSpeed()); //travel time is reduced based on ship speed
+                    }
+                    ui.println(" ");
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                
+                flush();
+                ui.println("Arrived at " + currentPlanet.getName() + "!");
+                ui.pressAnyKey();
+                gameLoopBridge();
+            }       
         }
     }
 
-    public void handleChoice() {
-
-    }
-
-    public void travel() {
-        
-    }
-
-    public void flush() {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-    }
-// ______________.__              _________            __                     __________ .__           
-// \__    ___/|  |__    ____      \_____  \   __ __ _/  |_   ____ _______     \______   \|__|  _____   
-//   |    |   |  |  \ _/ __ \      /   |   \ |  |  \\   __\_/ __ \\_  __ \     |       _/|  | /     \  
-//   |    |   |   Y  \\  ___/     /    |    \|  |  / |  |  \  ___/ |  | \/     |    |   \|  ||  Y Y  \ 
-//   |____|   |___|  / \___  >    \_______  /|____/  |__|   \___  >|__|        |____|_  /|__||__|_|  / 
-//                 \/      \/             \/                    \/                    \/           \/  
-    
+    public void title() {
+        ui.println(" ______________.__              _________            __                     __________ .__           \r\n" + //
+                    " \\__    ___/|  |__    ____      \\_____  \\   __ __ _/  |_   ____ _______     \\______   \\|__|  _____   \r\n" + //
+                    "   |    |   |  |  \\ _/ __ \\      /   |   \\ |  |  \\\\   __\\_/ __ \\\\_  __ \\     |       _/|  | /     \\  \r\n" + //
+                    "   |    |   |   Y  \\\\  ___/     /    |    \\|  |  / |  |  \\  ___/ |  | \\/     |    |   \\|  ||  Y Y  \\ \r\n" + //
+                    "   |____|   |___|  / \\___  >    \\_______  /|____/  |__|   \\___  >|__|        |____|_  /|__||__|_|  / \r\n" + //
+                    "                 \\/      \\/             \\/                    \\/                    \\/           \\/  ");
+    }    
 
 
     
