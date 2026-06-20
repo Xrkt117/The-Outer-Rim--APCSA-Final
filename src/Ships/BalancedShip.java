@@ -8,7 +8,6 @@ public class BalancedShip extends Ship {
             75,
             75,
             2,
-            2,
             70,
             null
         );

@@ -37,8 +37,9 @@ public abstract class Planet {
     }
 
      public void displayMarket() {
-        for (Item item : market) {
-            System.out.println("- " + item.getName() + " | Price: " + item.getBasePrice());
+        for (int i = 0; i < market.size(); i++) {
+            Item item = market.get(i);
+            System.out.println("[" + (i + 1) + "] " + item.getName() + " x" + item.getQuantity() + " | Price: " + item.getBasePrice());
         }
     }
 

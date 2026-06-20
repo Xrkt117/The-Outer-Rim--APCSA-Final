@@ -8,15 +8,13 @@ public abstract class Ship {
     private String name;
     private int fuel;
     private int maxFuel;
-    private int fuelUseRate;
     private int speed;
     private int cargoCapacity;
 
-    public Ship(String name, int fuel, int maxFuel, int fuelUseRate, int speed, int cargoCapacity, ArrayList<Item> cargo) {
+    public Ship(String name, int fuel, int maxFuel, int speed, int cargoCapacity, ArrayList<Item> cargo) {
         this.name = name;
         this.fuel = fuel;
         this.maxFuel = maxFuel;
-        this.fuelUseRate = fuelUseRate;
         this.speed = speed;
         this.cargoCapacity = cargoCapacity;
         this.cargo = cargo == null ? new ArrayList<>() : cargo;
@@ -34,10 +32,6 @@ public abstract class Ship {
         return maxFuel;
     }
 
-    public int getFuelUseRate() {
-        return fuelUseRate;
-    }
-
     public int getSpeed() {
         return speed;
     }
@@ -45,6 +39,11 @@ public abstract class Ship {
     public int getCargoCapacity() {
         return cargoCapacity;
     }
+
+    public ArrayList<Item> getCargo() {
+        return cargo;
+    }
+
 
     public void refuel(int amount) {
         if(amount > maxFuel) {
@@ -57,7 +56,6 @@ public abstract class Ship {
     public boolean addItem(Item item) {
         if(cargo.size() < cargoCapacity ) {
             cargo.add(item);
-                System.out.println(item.getName() + "has been added to cargo!");
             return true;
         } else {
                 System.out.println("Not enough capacity!");
@@ -68,7 +66,6 @@ public abstract class Ship {
     public boolean removeItem(Item item) {
         if(cargo.contains(item)) {
             cargo.remove(item);
-                System.out.println(item.getName() + "has been removed from cargo!");
             return true;
         } else {
                 System.out.println("There is nothing to remove.");
@@ -77,7 +74,11 @@ public abstract class Ship {
     }
 
     public void useFuel(int amount) {
-        
+        if (amount > fuel) {
+            System.out.println("Not enough fuel!");
+        } else {
+            fuel -= amount;
+        }
     }
 
     public void displayCargo() {
@@ -86,7 +87,7 @@ public abstract class Ship {
             System.out.println("- Empty");
         } else {
             for (Item item : cargo) {
-                System.out.println("- " + item.getName());
+                System.out.println("- " + item.getName() + " x" + item.getQuantity());
             }
         }
     }
@@ -94,9 +95,7 @@ public abstract class Ship {
     public void displayShipInfo() {
         System.out.println("\nShip Name: " + name);
         System.out.println("Fuel: " + fuel + "/" + maxFuel);
-        System.out.println("Speed: " + speed);
+        System.out.println("Speed: " + speed + " AU/s");
         System.out.println("Cargo Capacity: " + cargoCapacity);
     }
-
-
 }

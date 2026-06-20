@@ -40,6 +40,10 @@ public class Player {
         }
     }
 
+    public void earnCredits(int amount) {
+        credits += amount;
+    }
+
     public void addReputation(int amount) {
         reputation += amount;
     }

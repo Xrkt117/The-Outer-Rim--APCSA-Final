@@ -7,7 +7,6 @@ public class CargoShip extends Ship {
             "Cargo Ship", 
             50,
             50,
-            3,
             1,
             100,
             null

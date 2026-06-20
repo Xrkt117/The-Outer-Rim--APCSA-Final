@@ -7,7 +7,6 @@ public class ScoutShip extends Ship {
             "Scout Ship", 
             100,
             100,
-            1,
             4,
             40,
             null
