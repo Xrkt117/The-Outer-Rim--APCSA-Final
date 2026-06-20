@@ -1,6 +1,35 @@
 package ConsoleUI;
 
 public class art {
+    // make delay static so static methods can call it
+    public static void delay(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public static void starterShip() {
+        // print each line separately and pause between them (for the reveal)
+        String[] lines = {
+            "",
+            "                _____.-----._____",
+            "   ___----~~~~~~. ... ..... ... .~~~~~~----___",
+            "=================================================",
+            "   ~~~-----......._____________.......-----~~~",
+            "    (____)          \\   |   /          (____)",
+            "      ||           _/   |   \\_           ||",
+            "       \\\\_______--~  //~~~\\\\  ~--_______//",
+            "        `~~~~---__   \\\\___//   __---~~~~'",
+            "                  ~~-_______-~~"
+        };
+        for (int i = 0; i < lines.length; i++) {
+            System.out.println(lines[i]);
+            if (i < lines.length - 1) delay(300);
+        }
+    }
+
     public static void starterPlanet() {
         System.out.println("o               .        ___---___                    .                   \r\n" + //
                         "       .              .--\\        --.     .     .         .\r\n" + //
@@ -21,16 +50,16 @@ public class art {
 
     public static void arrived() {
         System.out.println(".         _  .          .          .    +     .          .          .      .   \n" + //
-                        "        .(_)          .            .            .            .       :         \n" + //
-                        "        .   .      ___________________          _-_          .  .  -+-        .\n" + //
-                        "          .        \\==============_=_/ ____.---'---`---.____        :  .       \n" + //
-                        "    . .        .  .    .       \\_ \\    \\----._________.----/      . ' .        \n" + //
-                        "        .  +         / .         \\ \\   /  /    `-_-'           .               \n" + //
-                        "       .            /     .  __,--`.`-'..'-_            /  .         .     .   \n" + //
-                        "      .   .      . /       ./____          ||     .    /  .  .                 \n" + //
-                        "          .       *        .     `--.____,-'          /   .         +  .       \n" + //
-                        "  . .        .  .     . .   .      .    .     .     .*   .      .   .          \n" + //
-                        "                                                                               \n" + //
+                        "        .(_)          .              .          .            .       :         \n" + //
+                        "        .   .     .    .     .     .           .          .  .  .  -+-        .\n" + //
+                        "          .        ___________________          _-_                 :  .       \n" + //
+                        "    . .        .   \\==============_=_/ ____.---'---`---.____      . ' .        \n" + //
+                        "        .  +      .    .       \\_ \\    \\----._________.----/   .               \n" + //
+                        "       .             / .         \\ \\   /  /    `-_-'   .             .     .   \n" + //
+                        "      .   .      .  /     .  __,--`.`-'..'-_               .   /               \n" + //
+                        "          .        /       ./____          ||     .   .   .   /     +  .       \n" + //
+                        "  . .        .  . *        .     `--.____,-'                 /  .   .          \n" + //
+                        ".    .     .     .    . .   .      .    .     .     .    .  *            .     \n" + //
                         " .   +      .          ___/\\_._/~~\\_...__/\\__.._._/~\\        .         .   .   \n" + //
                         "       .          _.--'                              `--./\\          .   .     \n" + //
                         "           /~~\\/~\\                                         `-/~\\_            . \n" + //
@@ -59,6 +88,7 @@ public class art {
                         "         .          .    .     .     .                      .          .       ");
     }
 
+    // changed to standard Java entry point signature
     public static void main() {
         System.out.println("       .-.            _        .  +           \n" + //
                         "      /   )    .    _(})==E                   \n" + //

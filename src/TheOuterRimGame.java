@@ -42,18 +42,9 @@ public class TheOuterRimGame {
         ui.println("[3] Author's Note / Credits");
         ui.println("[0] Quit");
         ui.println("");
-        input();
 
-        int choice;
-        try {
-            choice = input.nextInt();
-        } catch (Exception e) {
-            input.nextLine(); // consume bad input
-            ui.println("Please enter a number from the menu.");
-            ui.pressAnyKey();
-            return;
-        }
-        input.nextLine();
+        // centralized, robust integer input (no repeated try/catch)
+        int choice = readIntLoop();
 
         switch (choice) {
             case 1:
@@ -97,8 +88,20 @@ public class TheOuterRimGame {
         flush();
         String name = promptPlayerName();
         flush();
-        ui.println("Welcome, " + name + "!");
+        // smoother, slightly more narrative welcome
+        ui.println("Welcome aboard, " + name + ".");
         delay(1000);
+        ui.println("\nThe Outer Rim is a harsh place. Beyond the Core Worlds, distant colonies depend on independent pilots to move goods between the stars.");
+        ui.pressAnyKey();
+        flush();
+        ui.println("You have a small cargo ship, a handful of credits, and no reputation to your name");
+        delay(3000);
+        ui.println("\nNo one knows who you are.");
+        delay(1000);
+        ui.println("\nYet.");
+        delay(1000);
+        ui.println("\nThe hangar doors slowly open.");
+        ui.pressAnyKey();
 
         player = new Player(name, startingCredits, 0, new StarterShip());
 
@@ -111,8 +114,8 @@ public class TheOuterRimGame {
         flush();
 
         // starting narrative and instructions
-        ui.println("You are currently on " + currentPlanet.getName()
-                + ", the center of the Outer Rim. From here, you can travel to various planets, trade goods, and build your reputation. Your goal is to become the most renowned trader in the Outer Rim. Good luck! :)");
+        ui.println("You are docked at " + currentPlanet.getName()
+                + ", a modest hub in the epicenter of the Outer Rim. From here, you can travel to various planets, buy and sell goods, and build the reputation that will open new opportunities. Your goal is to become the most renowned trader in the Outer Rim. Good luck!");
         art.starterPlanet();
         ui.pressAnyKey();
 
@@ -120,17 +123,20 @@ public class TheOuterRimGame {
     }
 
     private String promptPlayerName() {
-        ui.println("What is your name traveler?");
+        ui.println("What is your name, traveler?");
         input();
         return input.nextLine();
     }
 
     private void introduceStarterShip() {
-        ui.println("\nMeet your ship:");
-        delay(1000);
+         flush();
+        ui.println("A soft hum fills the hangar. Through the mist of docking lights, your ship waits—steady and familiar.");
+        delay(2000);
+        art.starterShip(); // show the art here for a calm visual introduction
+        delay(700);
         player.getShip().displayShipInfo();
-        delay(1500);
-        ui.println("\nThis ship is modular, you can install Ship Parts to improve speed, cargo, or fuel.");
+        delay(700);
+        ui.println("\nThis vessel can be upgraded with ship parts to improve speed, cargo capacity, or fuel efficiency.");
         ui.pressAnyKey();
     }
 
@@ -161,9 +167,7 @@ public class TheOuterRimGame {
         ui.println("[2] Market");
         ui.println("[3] Travel");
         ui.println("[0] Quit");
-        input();
-        int choice = input.nextInt();
-        input.nextLine(); // prevents crashing if the user inputs a non-integer value
+        int choice = readIntLoop();
         switch (choice) {
             case 1:
                 shipConsole();
@@ -192,9 +196,7 @@ public class TheOuterRimGame {
         ui.println("[2] View cargo");
         ui.println("[3] Refuel (stub)");
         ui.println("[0] Return to Bridge");
-        input();
-        int c = input.nextInt();
-        input.nextLine();
+        int c = readIntLoop();
         switch (c) {
             case 1:
                 player.getShip().displayShipInfo();
@@ -237,15 +239,11 @@ public class TheOuterRimGame {
         ui.println("\n[1] Buy item");
         ui.println("[2] Sell item");
         ui.println("[0] Return to Bridge");
-        input();
-        int c = input.nextInt();
-        input.nextLine();
+        int c = readIntLoop();
         switch (c) {
             case 1: {
                 ui.println("Enter item number to buy: ");
-                input();
-                int itemNumber = input.nextInt();
-                input.nextLine();
+                int itemNumber = readIntLoop();
 
                 if (itemNumber <= 0 || itemNumber > market.size()) {
                     ui.println("Invalid item number.");
@@ -256,9 +254,7 @@ public class TheOuterRimGame {
 
                 Items.Item selectedItem = market.get(itemNumber - 1);
                 ui.println("Enter quantity: ");
-                input();
-                int quantity = input.nextInt();
-                input.nextLine();
+                int quantity = readIntLoop();
 
                 if (quantity <= 0) {
                     ui.println("Invalid quantity.");
@@ -327,9 +323,7 @@ public class TheOuterRimGame {
                 }
 
                 ui.println("\nEnter cargo item number to sell:");
-                input();
-                int cargoNumber = input.nextInt();
-                input.nextLine();
+                int cargoNumber = readIntLoop();
 
                 if (cargoNumber <= 0 || cargoNumber > cargo.size()) {
                     ui.println("Invalid cargo selection.");
@@ -340,9 +334,7 @@ public class TheOuterRimGame {
 
                 Items.Item cargoItem = cargo.get(cargoNumber - 1);
                 ui.println("Enter quantity to sell:");
-                input();
-                int sellQty = input.nextInt();
-                input.nextLine();
+                int sellQty = readIntLoop();
 
                 if (sellQty <= 0 || sellQty > cargoItem.getQuantity()) {
                     ui.println("Invalid quantity.");
@@ -418,9 +410,7 @@ public class TheOuterRimGame {
                     + Math.abs(currentPlanet.getDistance() - planet.getDistance()) + " AU");
         }
         ui.println("[0] Return to Bridge");
-        input();
-        int choice = input.nextInt();
-        input.nextLine();
+        int choice = readIntLoop();
         if (choice == 0) {
             gameLoopBridge(); // back to Bridge
         } else if (choice > 0 && choice <= planets.size()) {
@@ -482,6 +472,21 @@ public class TheOuterRimGame {
         try {
             Thread.sleep(time);
         } catch (Exception e) {
+        }
+    }
+
+    private int readIntLoop() {
+        while (true) {
+            input(); // prints "> "
+            try {
+                int val = input.nextInt();
+                input.nextLine();
+                return val;
+            } catch (Exception e) {
+                input.nextLine(); // consume bad input
+                ui.println("Please enter a valid number.");
+                ui.pressAnyKey();
+            }
         }
     }
 }
