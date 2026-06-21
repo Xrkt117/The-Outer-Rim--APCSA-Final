@@ -88,7 +88,6 @@ public class art {
                         "         .          .    .     .     .                      .          .       ");
     }
 
-    // changed to standard Java entry point signature
     public static void main() {
         System.out.println("       .-.            _        .  +           \n" + //
                         "      /   )    .    _(})==E                   \n" + //

@@ -10,10 +10,9 @@ public class MiningPlanet extends Planet {
 
     //@override
     public void generateMarket() {
-        addMarketItem(new Ore(10));
-        addMarketItem(new Food(3));
-        addMarketItem(new Medicine(2));
-        addMarketItem(new Fuel(5));
-        addMarketItem(new ShipParts(2));
+        addMarketItem(new Ore(18));
+        addMarketItem(new Titanium(8));
+        addMarketItem(new Copper(12));
+        addMarketItem(new FuelCanister(10));
     }
 }

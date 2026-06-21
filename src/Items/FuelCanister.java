@@ -1,11 +1,11 @@
 package Items;
 // Medicine item (empty shell)
-public class Fuel extends Item {
+public class FuelCanister extends Item {
 
-    public Fuel(int quantity) {
+    public FuelCanister(int quantity) {
         super(
             "Fuel", 
-            20, 
+            5,
             quantity, 
             "Fluid propellant" 
         );

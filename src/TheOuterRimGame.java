@@ -3,14 +3,17 @@ import java.util.Scanner;
 import Planets.Planet;
 import Ships.*;
 import ConsoleUI.*;
+import News.*;
 
 public class TheOuterRimGame {
     private Player player;
     private ArrayList<Planet> planets;
     private Planet currentPlanet;
+    private ReputationMilestones milestones;
+    private GalacticNews currentNews;
     private Scanner input;
     private static final int startingCredits = 1000;
-    private static final int fuelPerAU = 2;
+    private static final int fuelPerAU = 1;
 
     public static void main(String[] args) {
         TheOuterRimGame game = new TheOuterRimGame();
@@ -26,6 +29,8 @@ public class TheOuterRimGame {
     public TheOuterRimGame() {
         input = new Scanner(System.in);
         planets = new ArrayList<>();
+        milestones = new ReputationMilestones();
+        currentNews = new NoMajorNews();
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -33,7 +38,7 @@ public class TheOuterRimGame {
     public void preGameMenu() {
         flush();
         ui.println("WELCOME TO THE OUTER RIM");
-        ui.println("The ultimate space trading adventure- buy low, sell high, and upgrade your space vessel.");
+        ui.println("The ultimate space trading adventure- explore, upgrade, and build your name.");
         ui.println("");
         art.main();
         ui.println("");
@@ -53,7 +58,7 @@ public class TheOuterRimGame {
             case 2:
                 flush();
                 ui.println("--- Tips & Tricks ---");
-                ui.println("- Make sure you have enough fuel before long trips. ;)");
+                ui.println("- Make sure you have enough fuel before long trips.");
                 ui.println("- Keep ~10% of credits as an emergency buffer.");
                 ui.println("- Prioritize cargo upgrades early for bigger per-trip profits.");
                 ui.println("");
@@ -115,7 +120,7 @@ public class TheOuterRimGame {
 
         // starting narrative and instructions
         ui.println("You are docked at " + currentPlanet.getName()
-                + ", a modest hub in the epicenter of the Outer Rim. From here, you can travel to various planets, buy and sell goods, and build the reputation that will open new opportunities. Your goal is to become the most renowned trader in the Outer Rim. Good luck!");
+                + ". From here, you can trade near Earth, upgrade your ship, unlock distant markets, and build the reputation needed to become the most renowned trader in the Outer Rim.");
         art.starterPlanet();
         ui.pressAnyKey();
 
@@ -142,14 +147,20 @@ public class TheOuterRimGame {
 
     private void initPlanets() {
         planets.clear();
-        currentPlanet = new Planets.StarterPlanet("Nova-9");
+        currentPlanet = new Planets.StarterPlanet("Earth");
         planets.add(currentPlanet);
-        Planet miningPlanet = new Planets.MiningPlanet("Caelum", 5);
-        planets.add(miningPlanet);
-        Planet militaryPlanet = new Planets.MilitaryPlanet("Fortress-7", 10);
-        planets.add(militaryPlanet);
-        Planet tradingPlanet = new Planets.TradePlanet("Aurora", 20);
-        planets.add(tradingPlanet);
+        milestones.startAt(currentPlanet.getName());
+        Planet planetOne = new Planets.MiningPlanet("Luna Mining Colony", 5);
+        planets.add(planetOne);
+        Planet planetTwo = new Planets.MiningPlanet("Caelum Mining Colony", 10);
+        planets.add(planetTwo);
+        Planet tradeOutpost = new Planets.TradePlanet("Vesta Trade Outpost", 25);
+        planets.add(tradeOutpost);
+        Planet outerWorld = new Planets.MilitaryPlanet("Helios Outer World", 45);
+        planets.add(outerWorld);
+        Planet farthestPlanet = new Planets.MilitaryPlanet("Erebus Frontier", 60);
+        planets.add(farthestPlanet);
+        generateGalacticNews();
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -158,7 +169,12 @@ public class TheOuterRimGame {
     public void displayMenu() {
         flush();
         ui.println("=== Bridge Console ===");
-        ui.println("\nLocation: " + currentPlanet.getName() + "\n");
+        ui.println("\nLocation: " + currentPlanet.getName());
+        ui.println("Credits: " + player.getCredits());
+        ui.println("Credits earned from trade: " + milestones.getTotalCreditsEarned());
+        ui.println("Reputation: " + player.getReputation() + " - " + player.getReputationTitle() + "\n");
+        ui.println("GALACTIC NEWS");
+        ui.println(currentNews.getHeadline() + "\n");
     }
 
     public void gameLoopBridge() {
@@ -166,6 +182,7 @@ public class TheOuterRimGame {
         ui.println("[1] Ship Console");
         ui.println("[2] Market");
         ui.println("[3] Travel");
+        ui.println("[4] Galactic News");
         ui.println("[0] Quit");
         int choice = readIntLoop();
         switch (choice) {
@@ -177,6 +194,9 @@ public class TheOuterRimGame {
                 break;
             case 3:
                 travelConsole();
+                break;
+            case 4:
+                newsConsole();
                 break;
             case 0:
                 ui.println("Goodbye — safe travels.");
@@ -194,7 +214,8 @@ public class TheOuterRimGame {
         ui.println("--- Ship Console ---");
         ui.println("[1] View ship info");
         ui.println("[2] View cargo");
-        ui.println("[3] Refuel (stub)");
+        ui.println("[3] Refuel");
+        ui.println("[4] Upgrade ship");
         ui.println("[0] Return to Bridge");
         int c = readIntLoop();
         switch (c) {
@@ -209,12 +230,16 @@ public class TheOuterRimGame {
                 shipConsole();
                 break;
             case 3:
-                ui.println("\nRefuel feature not implemented yet.");
+                refuelShip();
                 ui.pressAnyKey();
                 shipConsole();
                 break;
+            case 4:
+                upgradeConsole();
+                break;
             case 0:
                 gameLoopBridge(); // back to Bridge
+                break;
             default:
                 ui.println("Invalid choice.");
                 ui.pressAnyKey();
@@ -228,19 +253,20 @@ public class TheOuterRimGame {
         flush();
         ui.println("--- " + currentPlanet.getName() + " Market ---\n");
         ui.println("Credits: " + player.getCredits() + "\n");
+        ui.println("Market News: " + currentNews.getHeadline() + "\n");
 
         ArrayList<Items.Item> market = currentPlanet.getMarket();
         for (int i = 0; i < market.size(); i++) {
             Items.Item it = market.get(i);
             ui.println(
-                    "[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity() + " | Price: " + it.getBasePrice());
+                    "[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity() + " | Buy Price: " + getBuyPrice(it));
         }
 
         ui.println("\n[1] Buy item");
         ui.println("[2] Sell item");
         ui.println("[0] Return to Bridge");
-        int c = readIntLoop();
-        switch (c) {
+        int choice = readIntLoop();
+        switch (choice) {
             case 1: {
                 ui.println("Enter item number to buy: ");
                 int itemNumber = readIntLoop();
@@ -278,7 +304,7 @@ public class TheOuterRimGame {
                     return;
                 }
 
-                int cost = selectedItem.getBasePrice() * quantity;
+                int cost = getBuyPrice(selectedItem) * quantity;
                 if (player.getCredits() < cost) {
                     ui.println("Not enough credits to buy " + selectedItem.getName() + ".");
                     ui.pressAnyKey();
@@ -344,7 +370,8 @@ public class TheOuterRimGame {
                 }
 
                 // compute sell value (80% of base price)
-                int sellValue = (int) Math.round(cargoItem.getBasePrice() * sellQty * 0.8);
+                int sellValue = getSellPrice(cargoItem) * sellQty;
+                int normalValue = cargoItem.getBasePrice() * sellQty;
 
                 // remove from cargo
                 cargoItem.setQuantity(cargoItem.getQuantity() - sellQty);
@@ -354,6 +381,7 @@ public class TheOuterRimGame {
 
                 // credit player
                 player.earnCredits(sellValue);
+                addReputation(milestones.recordCreditsEarned(sellValue));
 
                 // add as a new stack to market (do NOT merge into existing stock)
                 market.add(new Items.Item(cargoItem.getName(), cargoItem.getBasePrice(), sellQty,
@@ -361,9 +389,13 @@ public class TheOuterRimGame {
                 });
 
                 ui.println("Sold " + sellQty + " " + cargoItem.getName() + " for " + sellValue + " credits.");
+                if (sellValue > normalValue) {
+                    addReputation(milestones.recordTradeRoute());
+                }
                 ui.pressAnyKey();
                 marketConsole();
                 break;
+
 
             case 0:
                 gameLoopBridge(); // back to Bridge
@@ -421,11 +453,25 @@ public class TheOuterRimGame {
                 travelConsole();
             } else {
                 final int travelTime = Math.abs(currentPlanet.getDistance() - selectedPlanet.getDistance()); // time calculation based on distance
+                int fuelNeeded = travelTime * fuelPerAU;
+                if (!canTravelTo(selectedPlanet)) {
+                    ui.println(selectedPlanet.getName() + " requires a stronger fuel system.");
+                    ui.pressAnyKey();
+                    travelConsole();
+                    return;
+                }
+                if (player.getShip().getFuel() < fuelNeeded) {
+                    ui.println("Not enough fuel. You need " + fuelNeeded + "kL for this trip.");
+                    ui.pressAnyKey();
+                    travelConsole();
+                    return;
+                }
+                
                 currentPlanet = selectedPlanet;
-                player.getShip().useFuel(travelTime * fuelPerAU); // fuel usage is calculated based on travel time
+                player.getShip().useFuel(fuelNeeded); // fuel usage is calculated based on travel time
                 flush();
                 art.travelling();
-                ui.println("Plotting course to next destination...");
+                ui.println("Initializing warpdrive...");
                     for (int i = 0; i < travelTime; i++) {
                         System.out.print(".");
                         System.out.flush();
@@ -436,9 +482,191 @@ public class TheOuterRimGame {
                 flush();
                 art.arrived();
                 ui.println("Arrived at " + currentPlanet.getName() + "!");
+                addReputation(milestones.checkPlanetDiscovery(currentPlanet));
+                generateGalacticNews();
                 ui.pressAnyKey();
                 travelConsole();
             }
+        }
+    }
+
+        private boolean canTravelTo(Planet planet) {
+        if (planet.getName().contains("Trade Outpost") && player.getShip().getFuelUpgradeLevel() < 1) {
+            return false;
+        } else if (planet.getDistance() >= 45 && player.getShip().getFuelUpgradeLevel() < 2) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    private void refuelShip() {
+        int missingFuel = player.getShip().getMaxFuel() - player.getShip().getFuel();
+        int cost = missingFuel * 5;
+
+        if (missingFuel <= 0) {
+            ui.println("Fuel tank is already full.");
+        } else if (player.spendCredits(cost)) {
+            player.getShip().refuel(missingFuel);
+            ui.println("Refueled " + missingFuel + " kL for " + cost + " credits.");
+        }
+    }
+
+    private void upgradeConsole() {
+        flush();
+        ui.println("--- Ship Upgrades ---\n");
+        ui.println("[1] Fuel Upgrade | Cost: " + getFuelUpgradeCost());
+        ui.println("[2] Speed Upgrade | Cost: " + getSpeedUpgradeCost());
+        ui.println("[3] Cargo Upgrade | Cost: " + getCargoUpgradeCost());
+        ui.println("[0] Return to Ship Console");
+        int choice = readIntLoop();
+
+        if(choice == 1) {
+            int cost = getFuelUpgradeCost();
+            if (cost == 0) {
+                ui.println("Fuel is already fully upgraded.");
+            } else if (player.spendCredits(cost)) {
+                player.getShip().upgradeFuel();
+                ui.println("Fuel upgraded. New max fuel: " + player.getShip().getMaxFuel() + "kL");
+            }
+            ui.pressAnyKey();
+            upgradeConsole();
+        } else if (choice == 2) {
+            int cost = getSpeedUpgradeCost();
+            if (cost == 0) {
+                ui.println("Speed is already fully upgraded.");
+            } else if (player.spendCredits(cost)) {
+                player.getShip().upgradeSpeed();
+                ui.println("Speed upgraded. New speed: " + player.getShip().getSpeed() + " AU/s");
+            }
+            ui.pressAnyKey();
+            upgradeConsole();
+        } else if (choice == 3) {
+            int cost = getCargoUpgradeCost();
+            if (cost == 0) {
+                ui.println("Cargo is already fully upgraded.");
+            } else if (player.spendCredits(cost)) {
+                player.getShip().upgradeCargo();
+                ui.println("Cargo upgraded. New cargo capacity: " + player.getShip().getCargoCapacity() + " units");
+            }
+            ui.pressAnyKey();
+            upgradeConsole();
+        } else if (choice == 0) {
+            shipConsole();
+        }
+    }
+
+    private int getFuelUpgradeCost() {
+        if (player.getShip().getFuelUpgradeLevel() == 0) {
+            return 700;
+        } else if (player.getShip().getFuelUpgradeLevel() == 1) {
+            return 1600;
+        } else {
+            return 0;
+        }
+    }
+
+    private int getSpeedUpgradeCost() {
+        if (player.getShip().getSpeedUpgradeLevel() == 0) {
+            return 600;
+        } else if (player.getShip().getSpeedUpgradeLevel() == 1) {
+            return 1500;
+        } else {
+            return 0;
+        }
+    }
+
+    private int getCargoUpgradeCost() {
+        if (player.getShip().getCargoUpgradeLevel() == 0) {
+            return 500;
+        } else if (player.getShip().getCargoUpgradeLevel() == 1) {
+            return 1400;
+        } else {
+            return 0;
+        }
+    }
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    private void newsConsole() {
+        flush();
+        ui.println("GALACTIC NEWS\n");
+        ui.println(currentNews.getHeadline());
+        ui.println("\nUse market news to find better trade routes.");
+        ui.pressAnyKey();
+        gameLoopBridge();
+    }
+
+    private void generateGalacticNews() {
+        currentNews = GalacticNews.randomNews();
+    }
+
+    private int getBuyPrice(Items.Item item) {
+        double price = item.getBasePrice();
+
+        if (currentPlanet.getName().contains("Mining") && isMetal(item.getName())) {
+            price *= 0.7;
+        } else if (currentPlanet.getName().contains("Trade Outpost") && isOutpostGood(item.getName())) {
+            price *= 0.8;
+        }
+
+        price = currentNews.adjustPrice(item.getName(), price);
+
+        return (int) Math.round(price);
+    }
+
+    private int getSellPrice(Items.Item item) {
+        double price = item.getBasePrice() * 0.8;
+
+        if (currentPlanet.getName().contains("Mining") && needsMiningColony(item.getName())) {
+            price = item.getBasePrice() * 2.0;
+        } else if (currentPlanet.getName().contains("Trade Outpost") && isMetal(item.getName())) {
+            price = item.getBasePrice() * 2.2;
+        } else if (isOuterWorld(currentPlanet) && needsOuterWorld(item.getName())) {
+            price = item.getBasePrice() * 2.5;
+        }
+
+        price = currentNews.adjustPrice(item.getName(), price);
+
+        return (int) Math.round(price);
+    }
+
+    private boolean isMetal(String itemName) {
+        return itemName.equals("Ore") || itemName.equals("Titanium") || itemName.equals("Copper");
+    }
+
+    private boolean isOutpostGood(String itemName) {
+        return itemName.equals("Consumer Goods") || itemName.equals("Electronics");
+    }
+
+    private boolean needsMiningColony(String itemName) {
+        return itemName.equals("Food") || itemName.equals("Machinery");
+    }
+
+    private boolean needsOuterWorld(String itemName) {
+        return itemName.equals("Consumer Goods") || itemName.equals("Electronics") || itemName.equals("Medicine");
+    }
+
+    private boolean isOuterWorld(Planet planet) {
+        return planet.getDistance() >= 45;
+    }
+
+    private void addReputation(int amount) {
+        if (amount <= 0) {
+            return;
+        }
+
+        player.addReputation(amount);
+        ui.println("Reputation: " + player.getReputation() + " - " + player.getReputationTitle());
+
+        if (player.getReputation() >= 1000) {
+            ui.println("\nAcross every planet in the Outer Rim, your name is known.");
+            ui.println("Merchants respect you, pilots admire you, and colonies trust you.");
+            ui.println("\nYou are no longer just a trader.");
+            ui.println("You are the Renowned Trader of the Outer Rim.");
+            System.exit(0);
         }
     }
 

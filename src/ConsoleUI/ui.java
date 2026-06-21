@@ -2,7 +2,16 @@ package ConsoleUI;
 
 import java.util.Scanner;
 
+
 public final class ui {
+    public static void delay(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private static final Scanner scanner = new Scanner(System.in);
 
     private ui() { }
@@ -10,6 +19,11 @@ public final class ui {
     public static void println(String s) { System.out.println(s); }
     public static void print(String s) { System.out.print(s); }
     public static void blankLine() { System.out.println(); }
+
+    public static void printSoundln(String s) {
+        SoundPlayer.playSound("Sounds/printSound");
+        System.out.println(s);
+    }
 
     public static String prompt(String promptText) {
         System.out.print(promptText + " ");
@@ -33,19 +47,16 @@ public final class ui {
             System.out.flush();
     }
 
-    /**
-     * Waits for the user to press Enter. Use this to pause the game until the player continues.
-     * This is the simplest cross-platform approach; it prompts the user and reads the next line.
-     */
+    //waits for the user to press Enter. Use this to pause the game until the player continues.
     public static void pressAnyKey() {
+        delay(500);
+        SoundPlayer.playSound("Sounds/continue.wav");
         System.out.println(" ");
         System.out.println("[Press any key to continue]");
         scanner.nextLine();
     }
 
-    /**
-     * Same as pressAnyKey but allows a custom prompt string.
-     */
+    //same as pressAnyKey but allows a custom prompt string.
     public static void pressAnyKey(String prompt) {
         System.out.println(prompt);
         scanner.nextLine();

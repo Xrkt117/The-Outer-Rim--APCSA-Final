@@ -9,8 +9,10 @@ public class StarterPlanet extends Planet {
 
     @Override
     public void generateMarket() {
-        addMarketItem(new Food(5));
-        addMarketItem(new Medicine(6));
-        addMarketItem(new Fuel(4));
+        addMarketItem(new Food(12));
+        addMarketItem(new Medicine(8));
+        addMarketItem(new Machinery(4));
+        addMarketItem(new FuelCanister(80));
+        addMarketItem(new ShipParts(4));
     }
 }

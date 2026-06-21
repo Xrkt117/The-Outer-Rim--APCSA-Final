@@ -10,10 +10,10 @@ public class MilitaryPlanet extends Planet {
 
     @Override
     public void generateMarket() {
-        addMarketItem(new Ore(3));
-        addMarketItem(new Food(8));
+        addMarketItem(new Food(6));
         addMarketItem(new Medicine(8));
-        addMarketItem(new Fuel(10));
-        addMarketItem(new ShipParts(6));
+        addMarketItem(new Electronics(4));
+        addMarketItem(new FuelCanister(18));
+        addMarketItem(new ShipParts(8));
     }
 }

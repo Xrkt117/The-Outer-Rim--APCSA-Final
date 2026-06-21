@@ -10,6 +10,9 @@ public abstract class Ship {
     private int maxFuel;
     private int speed;
     private int cargoCapacity;
+    private int fuelUpgradeLevel;
+    private int speedUpgradeLevel;
+    private int cargoUpgradeLevel;
 
     public Ship(String name, int fuel, int maxFuel, int speed, int cargoCapacity, ArrayList<Item> cargo) {
         this.name = name;
@@ -40,16 +43,59 @@ public abstract class Ship {
         return cargoCapacity;
     }
 
+    public int getFuelUpgradeLevel() {
+        return fuelUpgradeLevel;
+    }
+
+    public int getSpeedUpgradeLevel() {
+        return speedUpgradeLevel;
+    }
+
+    public int getCargoUpgradeLevel() {
+        return cargoUpgradeLevel;
+    }
+
     public ArrayList<Item> getCargo() {
         return cargo;
     }
 
 
     public void refuel(int amount) {
-        if(amount > maxFuel) {
+        if(fuel + amount > maxFuel) {
             fuel = maxFuel;
         } else {
             fuel += amount;
+        }
+    }
+
+    public boolean upgradeFuel() {
+        if (fuelUpgradeLevel < 2) {
+            fuelUpgradeLevel++;
+            maxFuel += 20;
+            fuel = maxFuel;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean upgradeSpeed() {
+        if (speedUpgradeLevel < 2) {
+            speedUpgradeLevel++;
+            speed++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean upgradeCargo() {
+        if (cargoUpgradeLevel < 2) {
+            cargoUpgradeLevel++;
+            cargoCapacity += 10;
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -94,8 +140,10 @@ public abstract class Ship {
 
     public void displayShipInfo() {
         System.out.println("\nShip Name: " + name);
-        System.out.println("Fuel: " + fuel + "/" + maxFuel);
+        System.out.println("Fuel: " + fuel + "/" + maxFuel + " kL");
         System.out.println("Speed: " + speed + " AU/s");
         System.out.println("Cargo Capacity: " + cargoCapacity);
+        System.out.println("Fuel Upgrade Level: " + fuelUpgradeLevel);
+        System.out.println("Speed Upgrade Level: " + speedUpgradeLevel);
     }
 }

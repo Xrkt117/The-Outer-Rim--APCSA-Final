@@ -6,8 +6,8 @@ public class StarterShip extends Ship {
     public StarterShip() {
         super(
             "Starter Ship",
-            40,   // starting fuel
-            40,   // max fuel
+            20,   // starting fuel
+            20,   // max fuel
             1,    // speed
             20,   // cargo capacity
             null

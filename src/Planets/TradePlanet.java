@@ -10,10 +10,10 @@ public class TradePlanet extends Planet {
 
     @Override
     public void generateMarket() {
-        addMarketItem(new Ore(5));
-        addMarketItem(new Food(5));
-        addMarketItem(new Medicine(5));
-        addMarketItem(new Fuel(5));
-        addMarketItem(new ShipParts(5));
+        addMarketItem(new ConsumerGoods(10));
+        addMarketItem(new Electronics(6));
+        addMarketItem(new Machinery(5));
+        addMarketItem(new FuelCanister(20));
+        addMarketItem(new ShipParts(8));
     }
 }

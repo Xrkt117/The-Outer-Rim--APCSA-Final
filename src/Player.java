@@ -47,4 +47,20 @@ public class Player {
     public void addReputation(int amount) {
         reputation += amount;
     }
+
+    public String getReputationTitle() {
+        if (reputation >= 1000) {
+            return "Renowned Trader of the Outer Rim";
+        } else if (reputation >= 750) {
+            return "Trade Magnate";
+        } else if (reputation >= 500) {
+            return "Sector Merchant";
+        } else if (reputation >= 250) {
+            return "Established Trader";
+        } else if (reputation >= 100) {
+            return "Local Merchant";
+        } else {
+            return "Unknown Pilot";
+        }
+    }
 }
