@@ -21,7 +21,7 @@ public final class ui {
     public static void blankLine() { System.out.println(); }
 
     public static void printSoundln(String s) {
-        SoundPlayer.playSound("Sounds/printSound");
+        sound.playSound("Sounds/printSound.wav");
         System.out.println(s);
     }
 
@@ -50,7 +50,7 @@ public final class ui {
     //waits for the user to press Enter. Use this to pause the game until the player continues.
     public static void pressAnyKey() {
         delay(500);
-        SoundPlayer.playSound("Sounds/continue.wav");
+        sound.playSound("Sounds/continue.wav");
         System.out.println(" ");
         System.out.println("[Press any key to continue]");
         scanner.nextLine();

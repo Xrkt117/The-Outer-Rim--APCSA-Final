@@ -2,6 +2,7 @@ package Ships;
 
 import java.util.*;
 import Items.Item;
+import ConsoleUI.*;
 
 public abstract class Ship {
     private ArrayList<Item> cargo;
@@ -139,11 +140,13 @@ public abstract class Ship {
     }
 
     public void displayShipInfo() {
+        sound.playSound("Sounds/printSound.wav");
         System.out.println("\nShip Name: " + name);
         System.out.println("Fuel: " + fuel + "/" + maxFuel + " kL");
         System.out.println("Speed: " + speed + " AU/s");
         System.out.println("Cargo Capacity: " + cargoCapacity);
         System.out.println("Fuel Upgrade Level: " + fuelUpgradeLevel);
         System.out.println("Speed Upgrade Level: " + speedUpgradeLevel);
+        System.out.println("Cargo Upgrade Level: " + cargoUpgradeLevel);
     }
 }

@@ -1,6 +1,7 @@
 package Items;
 // Medicine item (empty shell)
 public class FuelCanister extends Item {
+    private int fuelAmount = 5;
 
     public FuelCanister(int quantity) {
         super(
@@ -10,4 +11,9 @@ public class FuelCanister extends Item {
             "Fluid propellant" 
         );
     }
+
+    public int getFuelAmount() {
+        return fuelAmount;
+    }
+
 }

@@ -36,54 +36,53 @@ public class TheOuterRimGame {
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public void preGameMenu() {
-        flush();
-        ui.println("WELCOME TO THE OUTER RIM");
-        ui.println("The ultimate space trading adventure- explore, upgrade, and build your name.");
-        ui.println("");
-        art.main();
-        ui.println("");
-        ui.println("[1] Start Adventure");
-        ui.println("[2] Tips & Tricks");
-        ui.println("[3] Author's Note / Credits");
-        ui.println("[0] Quit");
-        ui.println("");
+        while (true) {
+            flush();
+            ui.println("WELCOME TO THE OUTER RIM");
+            ui.println("The ultimate space trading adventure- explore, upgrade, and build your name.");
+            ui.println("");
+            art.main();
+            ui.println("");
+            ui.println("[1] Start Adventure");
+            ui.println("[2] Tips & Tricks");
+            ui.println("[3] Author's Note / Credits");
+            ui.println("[0] Quit");
+            ui.println("");
 
-        // centralized, robust integer input (no repeated try/catch)
-        int choice = readIntLoop();
+            int choice = readIntLoop();
 
-        switch (choice) {
-            case 1:
-                setupGame();
-                return;
-            case 2:
-                flush();
-                ui.println("--- Tips & Tricks ---");
-                ui.println("- Make sure you have enough fuel before long trips.");
-                ui.println("- Keep ~10% of credits as an emergency buffer.");
-                ui.println("- Prioritize cargo upgrades early for bigger per-trip profits.");
-                ui.println("");
-                ui.pressAnyKey();
-                preGameMenu();
-                break;
-            case 3:
-                flush();
-                ui.println("Author: Matvii Tsariuk");
-                ui.println("Course: APCSA — Final Project");
-                ui.println("Version: 1.0");
-                ui.println("");
-                ui.println(
-                        "Author's note: This project demonstrates OOP concepts: inheritance, polymorphism, and encapsulation.");
-                ui.println("Thanks for playing — feedback welcomed!");
-                ui.pressAnyKey();
-                preGameMenu();
-                break;
-            case 0:
-                ui.println("Goodbye — safe travels.");
-                System.exit(0);
-                return;
-            default:
-                ui.println("Invalid choice.");
-                ui.pressAnyKey();
+            switch (choice) {
+                case 1:
+                    setupGame();
+                    return;
+                case 2:
+                    flush();
+                    ui.println("--- Tips & Tricks ---");
+                    ui.println("- Make sure you have enough fuel before long trips.");
+                    ui.println("- Keep ~10% of credits as an emergency buffer.");
+                    ui.println("- Prioritize cargo upgrades early for bigger per-trip profits.");
+                    ui.println("");
+                    ui.pressAnyKey();
+                    break;
+                case 3:
+                    flush();
+                    ui.println("Author: Matvii Tsariuk");
+                    ui.println("Course: APCSA — Final Project");
+                    ui.println("Version: 1.0");
+                    ui.println("");
+                    ui.println(
+                            "Author's note: This project demonstrates OOP concepts: inheritance, polymorphism, and encapsulation.");
+                    ui.println("Thanks for playing — feedback welcomed!");
+                    ui.pressAnyKey();
+                    break;
+                case 0:
+                    ui.println("Goodbye — safe travels.");
+                    System.exit(0);
+                    return;
+                default:
+                    ui.println("Invalid choice.");
+                    ui.pressAnyKey();
+            }
         }
     }
 
@@ -93,19 +92,18 @@ public class TheOuterRimGame {
         flush();
         String name = promptPlayerName();
         flush();
-        // smoother, slightly more narrative welcome
         ui.println("Welcome aboard, " + name + ".");
         delay(1000);
-        ui.println("\nThe Outer Rim is a harsh place. Beyond the Core Worlds, distant colonies depend on independent pilots to move goods between the stars.");
+        ui.printSoundln("\nThe Outer Rim is a harsh place. Beyond the Core Worlds, distant colonies depend on independent pilots to move goods between the stars.");
         ui.pressAnyKey();
         flush();
         ui.println("You have a small cargo ship, a handful of credits, and no reputation to your name");
-        delay(3000);
-        ui.println("\nNo one knows who you are.");
+        delay(2000);
+        ui.printSoundln("\nNo one knows who you are.");
         delay(1000);
-        ui.println("\nYet.");
+        ui.printSoundln("\nYet.");
         delay(1000);
-        ui.println("\nThe hangar doors slowly open.");
+        ui.printSoundln("\nThe hangar doors slowly open.");
         ui.pressAnyKey();
 
         player = new Player(name, startingCredits, 0, new StarterShip());
@@ -118,13 +116,10 @@ public class TheOuterRimGame {
 
         flush();
 
-        // starting narrative and instructions
         ui.println("You are docked at " + currentPlanet.getName()
                 + ". From here, you can trade near Earth, upgrade your ship, unlock distant markets, and build the reputation needed to become the most renowned trader in the Outer Rim.");
         art.starterPlanet();
         ui.pressAnyKey();
-
-        gameLoopBridge();
     }
 
     private String promptPlayerName() {
@@ -137,11 +132,12 @@ public class TheOuterRimGame {
          flush();
         ui.println("A soft hum fills the hangar. Through the mist of docking lights, your ship waits—steady and familiar.");
         delay(2000);
-        art.starterShip(); // show the art here for a calm visual introduction
+        sound.sfxReveal();
+        art.starterShip();
         delay(700);
         player.getShip().displayShipInfo();
         delay(700);
-        ui.println("\nThis vessel can be upgraded with ship parts to improve speed, cargo capacity, or fuel efficiency.");
+        ui.printSoundln("\nThis vessel can be upgraded with ship parts to improve speed, cargo capacity, or fuel efficiency.");
         ui.pressAnyKey();
     }
 
@@ -171,7 +167,6 @@ public class TheOuterRimGame {
         ui.println("=== Bridge Console ===");
         ui.println("\nLocation: " + currentPlanet.getName());
         ui.println("Credits: " + player.getCredits());
-        ui.println("Credits earned from trade: " + milestones.getTotalCreditsEarned());
         ui.println("Reputation: " + player.getReputation() + " - " + player.getReputationTitle() + "\n");
         ui.println("GALACTIC NEWS");
         ui.println(currentNews.getHeadline() + "\n");
@@ -201,13 +196,15 @@ public class TheOuterRimGame {
             case 0:
                 ui.println("Goodbye — safe travels.");
                 System.exit(0);
+                return;
             default:
                 ui.println("Invalid choice.");
+                ui.pressAnyKey();
         }
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // displays vital ship information, cargo, and other features that may be added
+    // displays vital ship information, cargo, features that may be added
     // in the future such as refueling, repairing, or upgrading the ship.
     private void shipConsole() {
         flush();
@@ -238,8 +235,8 @@ public class TheOuterRimGame {
                 upgradeConsole();
                 break;
             case 0:
-                gameLoopBridge(); // back to Bridge
-                break;
+                gameLoopBridge();
+                return; // back to Bridge loop
             default:
                 ui.println("Invalid choice.");
                 ui.pressAnyKey();
@@ -296,7 +293,12 @@ public class TheOuterRimGame {
                     return;
                 }
 
-                int freeSlots = player.getShip().getCargoCapacity() - player.getShip().getCargo().size();
+                // enforce capacity by total item quantities (not stack count)
+                int occupied = 0;
+                for (Items.Item it : player.getShip().getCargo()) {
+                    occupied += it.getQuantity();
+                }
+                int freeSlots = player.getShip().getCargoCapacity() - occupied;
                 if (freeSlots < quantity) {
                     ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
                     ui.pressAnyKey();
@@ -369,7 +371,7 @@ public class TheOuterRimGame {
                     return;
                 }
 
-                // compute sell value (80% of base price)
+                // calculate sell value (80% of base price)
                 int sellValue = getSellPrice(cargoItem) * sellQty;
                 int normalValue = cargoItem.getBasePrice() * sellQty;
 
@@ -381,16 +383,14 @@ public class TheOuterRimGame {
 
                 // credit player
                 player.earnCredits(sellValue);
-                addReputation(milestones.recordCreditsEarned(sellValue));
+                // record milestone effects (milestones will handle reputation internally)
+                milestones.recordCreditsEarned(sellValue);
 
-                // add as a new stack to market (do NOT merge into existing stock)
-                market.add(new Items.Item(cargoItem.getName(), cargoItem.getBasePrice(), sellQty,
-                        cargoItem.getDescription()) {
-                });
+                // NOTE: do not restock the local market immediately with sold goods (prevents same-planet arbitrage) or else you'll have infinite credit bug lol
 
                 ui.println("Sold " + sellQty + " " + cargoItem.getName() + " for " + sellValue + " credits.");
                 if (sellValue > normalValue) {
-                    addReputation(milestones.recordTradeRoute());
+                    milestones.recordTradeRoute();
                 }
                 ui.pressAnyKey();
                 marketConsole();
@@ -398,8 +398,7 @@ public class TheOuterRimGame {
 
 
             case 0:
-                gameLoopBridge(); // back to Bridge
-                break;
+                return; // back to Bridge loop
             default:
                 ui.println("Invalid choice.");
                 marketConsole();
@@ -436,6 +435,7 @@ public class TheOuterRimGame {
         }
         ui.println(" ");
 
+        // Display planets normally- do NOT mark them as 'LOCKED' in the list.
         for (int i = 0; i < planets.size(); i++) {
             Planet planet = planets.get(i);
             ui.println("[" + (i + 1) + "] Travel to " + planet.getName() + " | Distance: "
@@ -444,7 +444,7 @@ public class TheOuterRimGame {
         ui.println("[0] Return to Bridge");
         int choice = readIntLoop();
         if (choice == 0) {
-            gameLoopBridge(); // back to Bridge
+            return; // back to Bridge loop
         } else if (choice > 0 && choice <= planets.size()) {
             Planet selectedPlanet = planets.get(choice - 1);
             if (selectedPlanet == currentPlanet) {
@@ -482,12 +482,13 @@ public class TheOuterRimGame {
                 flush();
                 art.arrived();
                 ui.println("Arrived at " + currentPlanet.getName() + "!");
-                addReputation(milestones.checkPlanetDiscovery(currentPlanet));
+                // record discovery milestones (milestones will award reputation internally)
+                milestones.checkPlanetDiscovery(currentPlanet);
                 generateGalacticNews();
                 ui.pressAnyKey();
                 travelConsole();
             }
-        }
+          }
     }
 
         private boolean canTravelTo(Planet planet) {
@@ -596,11 +597,16 @@ public class TheOuterRimGame {
         ui.println(currentNews.getHeadline());
         ui.println("\nUse market news to find better trade routes.");
         ui.pressAnyKey();
-        gameLoopBridge();
-    }
+        return;
+     }
 
     private void generateGalacticNews() {
-        currentNews = GalacticNews.randomNews();
+        // include occasional calm/no-major-news periods
+        if (Math.random() < 0.25) {
+            currentNews = new NoMajorNews();
+        } else {
+            currentNews = GalacticNews.randomNews();
+        }
     }
 
     private int getBuyPrice(Items.Item item) {
@@ -661,13 +667,11 @@ public class TheOuterRimGame {
         player.addReputation(amount);
         ui.println("Reputation: " + player.getReputation() + " - " + player.getReputationTitle());
 
-        if (player.getReputation() >= 1000) {
-            ui.println("\nAcross every planet in the Outer Rim, your name is known.");
-            ui.println("Merchants respect you, pilots admire you, and colonies trust you.");
-            ui.println("\nYou are no longer just a trader.");
-            ui.println("You are the Renowned Trader of the Outer Rim.");
-            System.exit(0);
-        }
+        // lower victory threshold to align with available milestone totals (adjustable)
+        if (player.getReputation() >= 600) {
+            // Victory message!!!  <-------------------------------------------------------------------------
+             System.exit(0);
+         }
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -692,6 +696,7 @@ public class TheOuterRimGame {
     }
 
     public void flush() {
+        sound.playSound("Sounds/flush.wav");
         ui.flush();
         title();
     }
@@ -706,12 +711,12 @@ public class TheOuterRimGame {
     private int readIntLoop() {
         while (true) {
             input(); // prints "> "
+            String line = null;
             try {
-                int val = input.nextInt();
-                input.nextLine();
+                line = input.nextLine();
+                int val = Integer.parseInt(line.trim());
                 return val;
             } catch (Exception e) {
-                input.nextLine(); // consume bad input
                 ui.println("Please enter a valid number.");
                 ui.pressAnyKey();
             }

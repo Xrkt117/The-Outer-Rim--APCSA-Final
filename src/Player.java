@@ -60,7 +60,7 @@ public class Player {
         } else if (reputation >= 100) {
             return "Local Merchant";
         } else {
-            return "Unknown Pilot";
+            return "Stranger";
         }
     }
 }

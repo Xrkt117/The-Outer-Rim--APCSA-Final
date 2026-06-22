@@ -6,9 +6,9 @@ public class ReputationMilestones {
     private ArrayList<String> visitedPlanets;
     private int totalCreditsEarned;
     private int profitableRoutes;
+    private boolean oneThousandCreditsReached;
+    private boolean fiveThousandCreditsReached;
     private boolean tenThousandCreditsReached;
-    private boolean fiftyThousandCreditsReached;
-    private boolean hundredThousandCreditsReached;
     private boolean tradeOutpostReached;
     private boolean outerWorldReached;
     private boolean farthestPlanetReached;
@@ -66,23 +66,23 @@ public class ReputationMilestones {
         int reputation = 0;
         totalCreditsEarned += credits;
 
-        if (totalCreditsEarned >= 10000 && !tenThousandCreditsReached) {
-            tenThousandCreditsReached = true;
-            ui.println("10,000 credits earned!");
+        if (totalCreditsEarned >= 1000 && !oneThousandCreditsReached) {
+            oneThousandCreditsReached = true;
+            ui.println("1,000 credits earned!");
             ui.println("+25 reputation");
             reputation += 25;
         }
 
-        if (totalCreditsEarned >= 50000 && !fiftyThousandCreditsReached) {
-            fiftyThousandCreditsReached = true;
-            ui.println("50,000 credits earned!");
+        if (totalCreditsEarned >= 5000 && !fiveThousandCreditsReached) {
+            fiveThousandCreditsReached = true;
+            ui.println("5,000 credits earned!");
             ui.println("+50 reputation");
             reputation += 50;
         }
 
-        if (totalCreditsEarned >= 100000 && !hundredThousandCreditsReached) {
-            hundredThousandCreditsReached = true;
-            ui.println("100,000 credits earned!");
+        if (totalCreditsEarned >= 10000 && !tenThousandCreditsReached) {
+            tenThousandCreditsReached = true;
+            ui.println("10,000 credits earned!");
             ui.println("+100 reputation");
             reputation += 100;
         }
