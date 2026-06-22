@@ -36,6 +36,7 @@ public class TheOuterRimGame {
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public void preGameMenu() {
+        sound.playLoop("Sounds/soundtrack.wav");
         while (true) {
             flush();
             ui.println("WELCOME TO THE OUTER RIM");

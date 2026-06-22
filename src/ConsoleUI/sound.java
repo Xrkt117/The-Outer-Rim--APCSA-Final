@@ -3,7 +3,10 @@ package ConsoleUI;
 import javax.sound.sampled.*;
 import java.io.File;
 
+
 public class sound {
+    private static Clip musicClip;
+
     public static void playSound(String filePath) {
         try {
             File soundFile = new File(filePath);
@@ -16,6 +19,25 @@ public class sound {
             clip.open(audio);
             clip.start();
         } catch (Exception e) {
+            System.err.println("Error playing sound: " + e.getMessage());
+        }
+    }
+
+    public static void playLoop(String filePath) {
+        try {
+            File soundFile = new File(filePath);
+            if (!soundFile.exists()) {
+                soundFile = new File("src/" + filePath);
+            }
+
+            AudioInputStream audio = AudioSystem.getAudioInputStream(soundFile);
+            if (musicClip != null && musicClip.isOpen()) { musicClip.stop(); musicClip.close(); }
+            musicClip = AudioSystem.getClip();
+            musicClip.open(audio);
+            musicClip.loop(Clip.LOOP_CONTINUOUSLY);
+            musicClip.start();
+        } catch (Exception e) {
+            System.err.println("Error playing sound: " + e.getMessage());
         }
     }
 
@@ -37,6 +59,10 @@ public class sound {
 
     public static void sfxFlush() {
         playSound("Sounds/flush.wav");
+    }
+
+    public static void sfxTransaction() {
+        playSound("Sounds/transaction.wav");
     }
 
 }
