@@ -35,9 +35,13 @@ public class TheOuterRimGame {
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    // initial menu with options for starting the game, viewing tips, and credits
     public void preGameMenu() {
+        //background music
         sound.playLoop("Sounds/soundtrack.wav");
-        while (true) {
+
+        //ensures theres no recursion and potential stack overflow from repeated invalid inputs in the menu
+        while (true) { 
             flush();
             ui.println("WELCOME TO THE OUTER RIM");
             ui.println("The ultimate space trading adventure- explore, upgrade, and build your name.");
@@ -50,9 +54,11 @@ public class TheOuterRimGame {
             ui.println("[0] Quit");
             ui.println("");
 
-            int choice = readIntLoop();
+            // input validation loop
+            int choice = readIntLoop(); 
 
-            switch (choice) {
+            // switch statement to handle menu choices
+            switch (choice) { 
                 case 1:
                     setupGame();
                     return;
@@ -91,7 +97,7 @@ public class TheOuterRimGame {
 
     public void setupGame() {
         flush();
-        String name = promptPlayerName();
+        String name = promptPlayerName(); //prompt for player name with input validation
         flush();
         ui.println("Welcome aboard, " + name + ".");
         delay(1000);
@@ -131,7 +137,7 @@ public class TheOuterRimGame {
 
     private void introduceStarterShip() {
          flush();
-        ui.println("A soft hum fills the hangar. Through the mist of docking lights, your ship waits—steady and familiar.");
+        ui.println("A soft hum fills the hangar. Through the mist of docking lights, your ship waits-steady and familiar.");
         delay(2000);
         sound.sfxReveal();
         art.starterShip();
@@ -165,7 +171,8 @@ public class TheOuterRimGame {
     // selectable menu through progression, reputation, or other factors
     public void displayMenu() {
         flush();
-        ui.println("=== Bridge Console ===");
+        ui.println("\n========================= Bridge Console =========================");
+        art.bridge();
         ui.println("\nLocation: " + currentPlanet.getName());
         ui.println("Credits: " + player.getCredits());
         ui.println("Reputation: " + player.getReputation() + " - " + player.getReputationTitle() + "\n");
@@ -268,9 +275,14 @@ public class TheOuterRimGame {
             case 1: {
                 flush();
                 ui.println("--- " + currentPlanet.getName() + " Market ---\n");
-                ui.printSoundln("Enter item number to buy: ");
                 ui.println("Credits: " + player.getCredits() + "\n");
                 ui.println("Market News: " + currentNews.getHeadline() + "\n");
+                for (int i = 0; i < market.size(); i++) {
+                    Items.Item it = market.get(i);
+                    ui.println(
+                            "[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity() + " | Buy Price: " + getBuyPrice(it));
+                }
+                ui.printSoundln("\nEnter item number to buy: ");
 
                 int itemNumber = readIntLoop();
 
@@ -287,6 +299,7 @@ public class TheOuterRimGame {
                 int quantity = readIntLoop();
 
                 if (quantity <= 0) {
+                    sound.sfxError();
                     ui.println("Invalid quantity.");
                     ui.pressAnyKey();
                     marketConsole();
@@ -294,6 +307,7 @@ public class TheOuterRimGame {
                 }
 
                 if (selectedItem.getQuantity() < quantity) {
+                    sound.sfxError();
                     ui.println("Not enough stock to buy " + quantity + " " + selectedItem.getName() + ".");
                     ui.pressAnyKey();
                     marketConsole();
@@ -307,6 +321,7 @@ public class TheOuterRimGame {
                 }
                 int freeSlots = player.getShip().getCargoCapacity() - occupied;
                 if (freeSlots < quantity) {
+                    sound.sfxError();
                     ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
                     ui.pressAnyKey();
                     marketConsole();
@@ -315,6 +330,7 @@ public class TheOuterRimGame {
 
                 int cost = getBuyPrice(selectedItem) * quantity;
                 if (player.getCredits() < cost) {
+                    sound.sfxError();
                     ui.println("Not enough credits to buy " + selectedItem.getName() + ".");
                     ui.pressAnyKey();
                     marketConsole();
@@ -327,6 +343,7 @@ public class TheOuterRimGame {
                 };
                 boolean ok = player.getShip().addItem(toAdd);
                 if (!ok) {
+                    sound.sfxError();
                     ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
                     ui.pressAnyKey();
                     marketConsole();
@@ -336,6 +353,7 @@ public class TheOuterRimGame {
                 // finalize: deduct credits and reduce market stock
                 player.spendCredits(cost);
                 selectedItem.setQuantity(selectedItem.getQuantity() - quantity);
+                sound.sfxTransaction();
                 ui.println("You bought " + quantity + " " + selectedItem.getName() + " for " + cost + " credits.");
                 ui.pressAnyKey();
                 marketConsole();
@@ -405,7 +423,8 @@ public class TheOuterRimGame {
 
 
             case 0:
-                return; // back to Bridge loop
+                gameLoopBridge();
+                return;
             default:
                 ui.println("Invalid choice.");
                 marketConsole();
@@ -724,6 +743,7 @@ public class TheOuterRimGame {
                 int val = Integer.parseInt(line.trim());
                 return val;
             } catch (Exception e) {
+                sound.sfxError();
                 ui.println("Please enter a valid number.");
                 ui.pressAnyKey();
             }
