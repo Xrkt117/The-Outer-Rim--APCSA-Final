@@ -1,0 +1,2 @@
+cd "/Users/matviitsariuk/Documents/The Outer Rim (APCSA Final)" 
+mkdir -p out && find . -name "*.java" -print0 | xargs -0 javac -d out && java -cp out TheOuterRimGame

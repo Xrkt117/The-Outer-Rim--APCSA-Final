@@ -17,4 +17,9 @@ public class MilitaryPlanet extends Planet {
         addMarketItem(new FuelCanister(4));
         addMarketItem(new ShipParts(1));
     }
+
+    @Override
+    public String getTradeRole() {
+        return "frontier outpost with high supply demand";
+    }
 }

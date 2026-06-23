@@ -17,4 +17,9 @@ public class MiningPlanet extends Planet {
         // Fuel is useful here, but not common enough to ignore planning.
         addMarketItem(new FuelCanister(3));
     }
+
+    @Override
+    public String getTradeRole() {
+        return "metal producer with cheap ore and raw materials";
+    }
 }

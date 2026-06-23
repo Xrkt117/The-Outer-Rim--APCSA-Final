@@ -16,4 +16,9 @@ public class StarterPlanet extends Planet {
         addMarketItem(new FuelCanister(6));
         addMarketItem(new ShipParts(1));
     }
+
+    @Override
+    public String getTradeRole() {
+        return "starter market with basic supplies";
+    }
 }

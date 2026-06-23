@@ -137,7 +137,11 @@ public class TheOuterRimGame {
     private String promptPlayerName() {
         ui.println("What is your name, traveler?");
         input();
-        return input.nextLine();
+        String name = input.nextLine().trim();
+        if (name.length() == 0) {
+            return "Traveler";
+        }
+        return name;
     }
 
     private void introduceStarterShip() {
@@ -213,6 +217,7 @@ public class TheOuterRimGame {
 				System.exit(0);
 				return;
 			default:
+                sound.sfxError();
 				ui.println("Invalid choice.");
 				ui.pressAnyKey();
 			}
@@ -220,8 +225,7 @@ public class TheOuterRimGame {
 	}
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // displays vital ship information, cargo, features that may be added
-    // in the future such as refueling, repairing, or upgrading the ship.
+    // displays vital ship information, cargo, ability to refuel, and upgrade ship modules
     private void shipConsole() {
 		// iterative ship console to avoid recursion and stack growth
 		while (true) {
@@ -232,8 +236,8 @@ public class TheOuterRimGame {
 			ui.println("[3] Refuel");
 			ui.println("[4] Upgrade ship");
 			ui.println("[0] Return to Bridge");
-			int c = readIntLoop();
-			switch (c) {
+			int choice = readIntLoop();
+			switch (choice) {
 			case 1:
 				player.getShip().displayShipInfo();
 				ui.pressAnyKey();
@@ -252,6 +256,7 @@ public class TheOuterRimGame {
 			case 0:
 				return; // return to bridge loop
 			default:
+                sound.sfxError();
 				ui.println("Invalid choice.");
 				ui.pressAnyKey();
 			}
@@ -279,6 +284,7 @@ public class TheOuterRimGame {
                 case 0:
                     return;
                 default:
+                    sound.sfxError();
                     ui.println("Invalid choice.");
                     ui.pressAnyKey();
             }
@@ -292,21 +298,36 @@ public class TheOuterRimGame {
         ui.println("Cargo Space: " + getCargoUsed() + "/" + player.getShip().getCargoCapacity() + "\n");
         ui.println("Market News: " + currentNews.getHeadline() + "\n");
 
+        //creates the market and pulls the market Item list for the planet type
         ArrayList<Items.Item> market = currentPlanet.getMarket();
+
+        if (market.isEmpty()) {
+            ui.println("This market is empty right now.");
+            return;
+        }
+
+        //ptint out the market's item list for display
         for (int i = 0; i < market.size(); i++) {
             Items.Item it = market.get(i);
-            ui.println("[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity()
+            ui.println((i + 1) + ". " + it.getName() + " x" + it.getQuantity()
                     + " | Buy Price: " + getBuyPrice(it));
         }
     }
 
     private void buyItem() {
         ArrayList<Items.Item> market = currentPlanet.getMarket();
+        if (market.isEmpty()) {
+            ui.println("There is nothing to buy here.");
+            ui.pressAnyKey();
+            return;
+        }
+
         displayMarket();
         ui.println("\nEnter item number to buy:");
         int itemNumber = readIntLoop();
 
         if (itemNumber <= 0 || itemNumber > market.size()) {
+            sound.sfxError();
             ui.println("Invalid item number.");
             ui.pressAnyKey();
             return;
@@ -317,12 +338,14 @@ public class TheOuterRimGame {
         int quantity = readIntLoop();
 
         if (quantity <= 0) {
+            sound.sfxError();
             ui.println("Invalid quantity.");
             ui.pressAnyKey();
             return;
         }
 
         if (selectedItem.getQuantity() < quantity) {
+            sound.sfxError();
             ui.println("Not enough stock to buy " + quantity + " " + selectedItem.getName() + ".");
             ui.pressAnyKey();
             return;
@@ -330,6 +353,7 @@ public class TheOuterRimGame {
 
         int freeSlots = player.getShip().getCargoCapacity() - getCargoUsed();
         if (freeSlots < quantity) {
+            sound.sfxError();
             ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
             ui.pressAnyKey();
             return;
@@ -337,6 +361,7 @@ public class TheOuterRimGame {
 
         int cost = getBuyPrice(selectedItem) * quantity;
         if (player.getCredits() < cost) {
+            sound.sfxError();
             ui.println("Not enough credits to buy " + selectedItem.getName() + ".");
             ui.pressAnyKey();
             return;
@@ -347,6 +372,7 @@ public class TheOuterRimGame {
         };
 
         if (!player.getShip().addItem(toAdd)) {
+            sound.sfxError();
             ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
             ui.pressAnyKey();
             return;
@@ -362,15 +388,21 @@ public class TheOuterRimGame {
     private void sellItem() {
         ArrayList<Items.Item> cargo = player.getShip().getCargo();
         if (cargo.isEmpty()) {
+            
             ui.println("You have no cargo to sell.");
             ui.pressAnyKey();
             return;
         }
 
-        ui.println("\n--- Your Cargo ---");
+        flush();
+        ui.println("--- " + currentPlanet.getName() + " Market ---\n");
+        ui.println("Credits: " + player.getCredits());
+        ui.println("Cargo Space: " + getCargoUsed() + "/" + player.getShip().getCargoCapacity() + "\n");
+        ui.println("Market News: " + currentNews.getHeadline() + "\n");
+        ui.println("--- Your Cargo ---");
         for (int i = 0; i < cargo.size(); i++) {
             Items.Item it = cargo.get(i);
-            ui.println("[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity()
+            ui.println((i + 1) + ". " + it.getName() + " x" + it.getQuantity()
                     + " | Sell Price: " + getSellPrice(it));
         }
 
@@ -416,6 +448,12 @@ public class TheOuterRimGame {
     private void travelConsole() {
 		// iterative travel console
 		while (true) {
+            if (planets.isEmpty()) {
+                ui.println("No planets are available for travel.");
+                ui.pressAnyKey();
+                return;
+            }
+
 			flush();
 			ui.println("\n--------------------- Travel ---------------------");
 			ui.print(" .              +   .                .   . .     .  . *\r\n" + //
@@ -436,7 +474,7 @@ public class TheOuterRimGame {
 			ui.println("\nFrom here, you can travel to the following planets:");
 			for (Planet planet : planets) {
 				if (planet != currentPlanet) {
-					ui.println("- " + planet.getName() + " ");
+					ui.println("- " + planet.getName() + " | " + planet.getTradeRole());
 				}
 			}
 			ui.println(" ");
@@ -491,7 +529,8 @@ public class TheOuterRimGame {
 					addReputation(milestones.checkPlanetDiscovery(currentPlanet));
 					generateGalacticNews();
 					ui.pressAnyKey();
-					continue;
+					gameLoopBridge();
+                    return;
 				}
 			} else {
 				ui.println("Invalid destination.");

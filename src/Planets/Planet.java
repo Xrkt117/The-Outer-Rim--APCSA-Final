@@ -47,4 +47,6 @@ public abstract class Planet {
     }
 
     public abstract void generateMarket();
+
+    public abstract String getTradeRole();
 }

@@ -17,4 +17,9 @@ public class TradePlanet extends Planet {
         addMarketItem(new FuelCanister(5));
         addMarketItem(new ShipParts(2));
     }
+
+    @Override
+    public String getTradeRole() {
+        return "trade hub with finished goods and rare parts";
+    }
 }
