@@ -13,6 +13,6 @@ public class MiningPlanet extends Planet {
         addMarketItem(new Ore(18));
         addMarketItem(new Titanium(8));
         addMarketItem(new Copper(12));
-        addMarketItem(new FuelCanister(10));
+        addMarketItem(new FuelCanister(3));
     }
 }

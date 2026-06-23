@@ -16,6 +16,10 @@ public final class ui {
 
     private ui() { }
 
+    public static Scanner getScanner() {
+        return scanner;
+    }
+
     public static void println(String s) { System.out.println(s); }
     public static void print(String s) { System.out.print(s); }
     public static void blankLine() { System.out.println(); }
@@ -53,12 +57,16 @@ public final class ui {
         sound.playSound("Sounds/continue.wav");
         System.out.println(" ");
         System.out.println("[Press any key to continue]");
-        scanner.nextLine();
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
     }
 
     //same as pressAnyKey but allows a custom prompt string.
     public static void pressAnyKey(String prompt) {
         System.out.println(prompt);
-        scanner.nextLine();
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
     }
 }

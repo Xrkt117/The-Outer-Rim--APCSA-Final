@@ -13,7 +13,7 @@ public class TradePlanet extends Planet {
         addMarketItem(new ConsumerGoods(10));
         addMarketItem(new Electronics(6));
         addMarketItem(new Machinery(5));
-        addMarketItem(new FuelCanister(20));
-        addMarketItem(new ShipParts(8));
+        addMarketItem(new FuelCanister(5));
+        addMarketItem(new ShipParts(2));
     }
 }

@@ -13,7 +13,7 @@ public class MilitaryPlanet extends Planet {
         addMarketItem(new Food(6));
         addMarketItem(new Medicine(8));
         addMarketItem(new Electronics(4));
-        addMarketItem(new FuelCanister(18));
-        addMarketItem(new ShipParts(8));
+        addMarketItem(new FuelCanister(4));
+        addMarketItem(new ShipParts(1));
     }
 }

@@ -5,10 +5,10 @@ public class FuelCanister extends Item {
 
     public FuelCanister(int quantity) {
         super(
-            "Fuel", 
-            5,
-            quantity, 
-            "Fluid propellant" 
+            "Fuel Canister",
+            25,
+            quantity,
+            "A portable fuel cell that can refill 5 kL of ship fuel."
         );
     }
 

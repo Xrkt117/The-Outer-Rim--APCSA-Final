@@ -14,6 +14,8 @@ public class TheOuterRimGame {
     private Scanner input;
     private static final int startingCredits = 1000;
     private static final int fuelPerAU = 1;
+    private static final int fuelPerCanister = 5;
+    private static final int shipPartsPerUpgrade = 1;
 
     public static void main(String[] args) {
         TheOuterRimGame game = new TheOuterRimGame();
@@ -27,7 +29,7 @@ public class TheOuterRimGame {
     }
 
     public TheOuterRimGame() {
-        input = new Scanner(System.in);
+        input = ui.getScanner();
         planets = new ArrayList<>();
         milestones = new ReputationMilestones();
         currentNews = new NoMajorNews();
@@ -41,7 +43,7 @@ public class TheOuterRimGame {
         sound.playLoop("Sounds/soundtrack.wav");
 
         //ensures theres no recursion and potential stack overflow from repeated invalid inputs in the menu
-        while (true) { 
+        while (true) {
             flush();
             ui.println("WELCOME TO THE OUTER RIM");
             ui.println("The ultimate space trading adventure- explore, upgrade, and build your name.");
@@ -55,10 +57,10 @@ public class TheOuterRimGame {
             ui.println("");
 
             // input validation loop
-            int choice = readIntLoop(); 
+            int choice = readIntLoop();
 
             // switch statement to handle menu choices
-            switch (choice) { 
+            switch (choice) {
                 case 1:
                     setupGame();
                     return;
@@ -256,184 +258,154 @@ public class TheOuterRimGame {
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void marketConsole() {
-		// iterative market console
-		while (true) {
-			flush();
-			ui.println("--- " + currentPlanet.getName() + " Market ---\n");
-			ui.println("Credits: " + player.getCredits() + "\n");
-			ui.println("Market News: " + currentNews.getHeadline() + "\n");
+        while (true) {
+            displayMarket();
+
+            ui.println("\n[1] Buy item");
+            ui.println("[2] Sell item");
+            ui.println("[0] Return to Bridge");
+            int choice = readIntLoop();
+
+            switch (choice) {
+                case 1:
+                    buyItem();
+                    break;
+                case 2:
+                    sellItem();
+                    break;
+                case 0:
+                    return;
+                default:
+                    ui.println("Invalid choice.");
+                    ui.pressAnyKey();
+            }
+        }
+    }
+
+    private void displayMarket() {
+        flush();
+        ui.println("--- " + currentPlanet.getName() + " Market ---\n");
+        ui.println("Credits: " + player.getCredits());
+        ui.println("Cargo Space: " + getCargoUsed() + "/" + player.getShip().getCargoCapacity() + "\n");
+        ui.println("Market News: " + currentNews.getHeadline() + "\n");
 
         ArrayList<Items.Item> market = currentPlanet.getMarket();
         for (int i = 0; i < market.size(); i++) {
             Items.Item it = market.get(i);
-            ui.println(
-                    "[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity() + " | Buy Price: " + getBuyPrice(it));
+            ui.println("[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity()
+                    + " | Buy Price: " + getBuyPrice(it));
+        }
+    }
+
+    private void buyItem() {
+        ArrayList<Items.Item> market = currentPlanet.getMarket();
+        displayMarket();
+        ui.println("\nEnter item number to buy:");
+        int itemNumber = readIntLoop();
+
+        if (itemNumber <= 0 || itemNumber > market.size()) {
+            ui.println("Invalid item number.");
+            ui.pressAnyKey();
+            return;
         }
 
-        ui.println("\n[1] Buy item");
-        ui.println("[2] Sell item");
-        ui.println("[0] Return to Bridge");
-        int choice = readIntLoop();
-        switch (choice) {
-            case 1: {
-                flush();
-                ui.println("--- " + currentPlanet.getName() + " Market ---\n");
-                ui.println("Credits: " + player.getCredits() + "\n");
-                ui.println("Market News: " + currentNews.getHeadline() + "\n");
-                for (int i = 0; i < market.size(); i++) {
-                    Items.Item it = market.get(i);
-                    ui.println(
-                            "[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity() + " | Buy Price: " + getBuyPrice(it));
-                }
-                ui.printSoundln("\nEnter item number to buy: ");
+        Items.Item selectedItem = market.get(itemNumber - 1);
+        ui.println("Enter quantity:");
+        int quantity = readIntLoop();
 
-                int itemNumber = readIntLoop();
-
-                if (itemNumber <= 0 || itemNumber > market.size()) {
-                    sound.sfxError();
-                    ui.println("Invalid item number.");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                Items.Item selectedItem = market.get(itemNumber - 1);
-                ui.printSoundln("Enter quantity: ");
-                int quantity = readIntLoop();
-
-                if (quantity <= 0) {
-                    sound.sfxError();
-                    ui.println("Invalid quantity.");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                if (selectedItem.getQuantity() < quantity) {
-                    sound.sfxError();
-                    ui.println("Not enough stock to buy " + quantity + " " + selectedItem.getName() + ".");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                // enforce capacity by total item quantities (not stack count)
-                int occupied = 0;
-                for (Items.Item it : player.getShip().getCargo()) {
-                    occupied += it.getQuantity();
-                }
-                int freeSlots = player.getShip().getCargoCapacity() - occupied;
-                if (freeSlots < quantity) {
-                    sound.sfxError();
-                    ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                int cost = getBuyPrice(selectedItem) * quantity;
-                if (player.getCredits() < cost) {
-                    sound.sfxError();
-                    ui.println("Not enough credits to buy " + selectedItem.getName() + ".");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                // All checks passed, proceed with purchase
-                Items.Item toAdd = new Items.Item(selectedItem.getName(), selectedItem.getBasePrice(), quantity,
-                        selectedItem.getDescription()) {
-                };
-                boolean ok = player.getShip().addItem(toAdd);
-                if (!ok) {
-                    sound.sfxError();
-                    ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                // finalize: deduct credits and reduce market stock
-                player.spendCredits(cost);
-                selectedItem.setQuantity(selectedItem.getQuantity() - quantity);
-                sound.sfxTransaction();
-                ui.println("You bought " + quantity + " " + selectedItem.getName() + " for " + cost + " credits.");
-                ui.pressAnyKey();
-                marketConsole();
-                break;
-            }
-            case 2:
-                ArrayList<Items.Item> cargo = player.getShip().getCargo();
-                if (cargo.isEmpty()) {
-                    ui.println("You have no cargo to sell.");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                ui.println("\n--- Your Cargo ---");
-                for (int i = 0; i < cargo.size(); i++) {
-                    Items.Item it = cargo.get(i);
-                    ui.println("[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity() + " | Base: "
-                            + it.getBasePrice());
-                }
-
-                ui.println("\nEnter cargo item number to sell:");
-                int cargoNumber = readIntLoop();
-
-                if (cargoNumber <= 0 || cargoNumber > cargo.size()) {
-                    ui.println("Invalid cargo selection.");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                Items.Item cargoItem = cargo.get(cargoNumber - 1);
-                ui.println("Enter quantity to sell:");
-                int sellQty = readIntLoop();
-
-                if (sellQty <= 0 || sellQty > cargoItem.getQuantity()) {
-                    ui.println("Invalid quantity.");
-                    ui.pressAnyKey();
-                    marketConsole();
-                    return;
-                }
-
-                // calculate sell value (80% of base price)
-                int sellValue = getSellPrice(cargoItem) * sellQty;
-                int normalValue = cargoItem.getBasePrice() * sellQty;
-
-                // remove from cargo
-                cargoItem.setQuantity(cargoItem.getQuantity() - sellQty);
-                if (cargoItem.getQuantity() <= 0) {
-                    cargo.remove(cargoNumber - 1);
-                }
-
-                // credit player
-                player.earnCredits(sellValue);
-                // record milestone effects (milestones will handle reputation internally)
-                milestones.recordCreditsEarned(sellValue);
-
-                // NOTE: do not restock the local market immediately with sold goods (prevents same-planet arbitrage) or else you'll have infinite credit bug lol
-
-                ui.println("Sold " + sellQty + " " + cargoItem.getName() + " for " + sellValue + " credits.");
-                if (sellValue > normalValue) {
-                    milestones.recordTradeRoute();
-                }
-                ui.pressAnyKey();
-                marketConsole();
-                break;
-
-
-            case 0:
-                gameLoopBridge();
-                return;
-            default:
-                ui.println("Invalid choice.");
-                marketConsole();
-                return;
-            }
+        if (quantity <= 0) {
+            ui.println("Invalid quantity.");
+            ui.pressAnyKey();
+            return;
         }
+
+        if (selectedItem.getQuantity() < quantity) {
+            ui.println("Not enough stock to buy " + quantity + " " + selectedItem.getName() + ".");
+            ui.pressAnyKey();
+            return;
+        }
+
+        int freeSlots = player.getShip().getCargoCapacity() - getCargoUsed();
+        if (freeSlots < quantity) {
+            ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
+            ui.pressAnyKey();
+            return;
+        }
+
+        int cost = getBuyPrice(selectedItem) * quantity;
+        if (player.getCredits() < cost) {
+            ui.println("Not enough credits to buy " + selectedItem.getName() + ".");
+            ui.pressAnyKey();
+            return;
+        }
+
+        Items.Item toAdd = new Items.Item(selectedItem.getName(), selectedItem.getBasePrice(), quantity,
+                selectedItem.getDescription()) {
+        };
+
+        if (!player.getShip().addItem(toAdd)) {
+            ui.println("Not enough cargo space to buy " + quantity + " " + selectedItem.getName() + ".");
+            ui.pressAnyKey();
+            return;
+        }
+
+        player.spendCredits(cost);
+        selectedItem.setQuantity(selectedItem.getQuantity() - quantity);
+        sound.sfxTransaction();
+        ui.println("You bought " + quantity + " " + selectedItem.getName() + " for " + cost + " credits.");
+        ui.pressAnyKey();
+    }
+
+    private void sellItem() {
+        ArrayList<Items.Item> cargo = player.getShip().getCargo();
+        if (cargo.isEmpty()) {
+            ui.println("You have no cargo to sell.");
+            ui.pressAnyKey();
+            return;
+        }
+
+        ui.println("\n--- Your Cargo ---");
+        for (int i = 0; i < cargo.size(); i++) {
+            Items.Item it = cargo.get(i);
+            ui.println("[" + (i + 1) + "] " + it.getName() + " x" + it.getQuantity()
+                    + " | Sell Price: " + getSellPrice(it));
+        }
+
+        ui.println("\nEnter cargo item number to sell:");
+        int cargoNumber = readIntLoop();
+
+        if (cargoNumber <= 0 || cargoNumber > cargo.size()) {
+            ui.println("Invalid cargo selection.");
+            ui.pressAnyKey();
+            return;
+        }
+
+        Items.Item cargoItem = cargo.get(cargoNumber - 1);
+        ui.println("Enter quantity to sell:");
+        int sellQty = readIntLoop();
+
+        if (sellQty <= 0 || sellQty > cargoItem.getQuantity()) {
+            ui.println("Invalid quantity.");
+            ui.pressAnyKey();
+            return;
+        }
+
+        int sellValue = getSellPrice(cargoItem) * sellQty;
+        int normalValue = cargoItem.getBasePrice() * sellQty;
+
+        cargoItem.setQuantity(cargoItem.getQuantity() - sellQty);
+        if (cargoItem.getQuantity() <= 0) {
+            cargo.remove(cargoNumber - 1);
+        }
+
+        player.earnCredits(sellValue);
+        addReputation(milestones.recordCreditsEarned(sellValue));
+
+        ui.println("Sold " + sellQty + " " + cargoItem.getName() + " for " + sellValue + " credits.");
+        if (sellValue > normalValue) {
+            addReputation(milestones.recordTradeRoute());
+        }
+        ui.pressAnyKey();
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -457,6 +429,7 @@ public class TheOuterRimGame {
 					"          .     .    .  +   . .  *  .       . / |\r\n" + //
 					".      .  .  .  *   .  *  . +..  .            *\r");
 			ui.println("\n--------------------------------------------------");
+			ui.println("Fuel: " + player.getShip().getFuel() + "/" + player.getShip().getMaxFuel() + " kL");
 			ui.println("\nFrom here, you can travel to the following planets:");
 			for (Planet planet : planets) {
 				if (planet != currentPlanet) {
@@ -466,8 +439,13 @@ public class TheOuterRimGame {
 			ui.println(" ");
 			for (int i = 0; i < planets.size(); i++) {
 				Planet planet = planets.get(i);
-				ui.println("[" + (i + 1) + "] Travel to " + planet.getName() + " | Distance: "
-						+ Math.abs(currentPlanet.getDistance() - planet.getDistance()) + " AU");
+				int distance = Math.abs(currentPlanet.getDistance() - planet.getDistance());
+				if (planet == currentPlanet) {
+					ui.println("[" + (i + 1) + "] " + planet.getName() + " (current location)");
+				} else {
+					ui.println("[" + (i + 1) + "] Travel to " + planet.getName() + " | Distance: "
+							+ distance + " AU | Fuel: " + (distance * fuelPerAU) + " kL");
+				}
 			}
 			ui.println("[0] Return to Bridge");
 			int choice = readIntLoop();
@@ -534,13 +512,110 @@ public class TheOuterRimGame {
 
     private void refuelShip() {
         int missingFuel = player.getShip().getMaxFuel() - player.getShip().getFuel();
-        int cost = missingFuel * 5;
 
         if (missingFuel <= 0) {
             ui.println("Fuel tank is already full.");
-        } else if (player.spendCredits(cost)) {
+            return;
+        }
+
+        int fuelCanisters = getCargoQuantity("Fuel Canister");
+        if (fuelCanisters > 0) {
+            int fuelToAdd = Math.min(missingFuel, fuelCanisters * fuelPerCanister);
+            int canistersUsed = (fuelToAdd + fuelPerCanister - 1) / fuelPerCanister;
+            removeCargoQuantity("Fuel Canister", canistersUsed);
+            player.getShip().refuel(fuelToAdd);
+            ui.println("Used " + canistersUsed + " Fuel Canister(s) to refuel " + fuelToAdd + " kL.");
+            return;
+        }
+
+        int cost = missingFuel * 5;
+        if (player.spendCredits(cost)) {
             player.getShip().refuel(missingFuel);
             ui.println("Refueled " + missingFuel + " kL for " + cost + " credits.");
+        }
+    }
+
+    private int getCargoUsed() {
+        int used = 0;
+        for (Items.Item item : player.getShip().getCargo()) {
+            used += item.getQuantity();
+        }
+        return used;
+    }
+
+    private int getCargoQuantity(String itemName) {
+        int total = 0;
+        for (Items.Item item : player.getShip().getCargo()) {
+            if (item.getName().equals(itemName)) {
+                total += item.getQuantity();
+            }
+        }
+        return total;
+    }
+
+    private boolean removeCargoQuantity(String itemName, int quantity) {
+        int remaining = quantity;
+        ArrayList<Items.Item> cargo = player.getShip().getCargo();
+
+        for (int i = cargo.size() - 1; i >= 0 && remaining > 0; i--) {
+            Items.Item item = cargo.get(i);
+            if (item.getName().equals(itemName)) {
+                int removeAmount = Math.min(item.getQuantity(), remaining);
+                item.setQuantity(item.getQuantity() - removeAmount);
+                remaining -= removeAmount;
+
+                if (item.getQuantity() <= 0) {
+                    cargo.remove(i);
+                }
+            }
+        }
+
+        return remaining == 0;
+    }
+
+    private boolean payForUpgrade(int cost) {
+        if (getCargoQuantity("Ship Parts") < shipPartsPerUpgrade) {
+            ui.println("You need " + shipPartsPerUpgrade + " Ship Parts in cargo for this upgrade.");
+            return false;
+        }
+
+        if (player.getCredits() < cost) {
+            ui.println("Not enough credits.");
+            return false;
+        }
+
+        player.spendCredits(cost);
+        removeCargoQuantity("Ship Parts", shipPartsPerUpgrade);
+        return true;
+    }
+
+    private int getFuelUpgradeCost() {
+        if (player.getShip().getFuelUpgradeLevel() == 0) {
+            return 700;
+        } else if (player.getShip().getFuelUpgradeLevel() == 1) {
+            return 1600;
+        } else {
+            return 0;
+        }
+    }
+
+    private int getSpeedUpgradeCost() {
+        if (player.getShip().getSpeedUpgradeLevel() == 0) {
+            return 600;
+        } else if (player.getShip().getSpeedUpgradeLevel() == 1) {
+            return 1500;
+        } else {
+            return 0;
+        }
+    }
+
+    private int getCargoUpgradeCost() {
+        if (player.getShip().getCargoUpgradeLevel() == 0) {
+            return 500;
+        } else if (player.getShip().getCargoUpgradeLevel() == 1) {
+            return 1400;
+        } else {
+            return 0;
         }
     }
 
@@ -549,6 +624,8 @@ public class TheOuterRimGame {
 		while (true) {
 			flush();
 			ui.println("--- Ship Upgrades ---\n");
+			ui.println("Ship Parts in cargo: " + getCargoQuantity("Ship Parts"));
+			ui.println("Each upgrade requires " + shipPartsPerUpgrade + " Ship Parts plus credits.\n");
 			ui.println("[1] Fuel Upgrade | Cost: " + getFuelUpgradeCost());
 			ui.println("[2] Speed Upgrade | Cost: " + getSpeedUpgradeCost());
 			ui.println("[3] Cargo Upgrade | Cost: " + getCargoUpgradeCost());
@@ -558,11 +635,9 @@ public class TheOuterRimGame {
 				int cost = getFuelUpgradeCost();
 				if (cost == 0) {
 					ui.println("Fuel is already fully upgraded.");
-				} else if (player.spendCredits(cost)) {
+				} else if (payForUpgrade(cost)) {
 					player.getShip().upgradeFuel();
 					ui.println("Fuel upgraded. New max fuel: " + player.getShip().getMaxFuel() + "kL");
-				} else {
-					ui.println("Not enough credits.");
 				}
 				ui.pressAnyKey();
 				continue;
@@ -570,11 +645,9 @@ public class TheOuterRimGame {
 				int cost = getSpeedUpgradeCost();
 				if (cost == 0) {
 					ui.println("Speed is already fully upgraded.");
-				} else if (player.spendCredits(cost)) {
+				} else if (payForUpgrade(cost)) {
 					player.getShip().upgradeSpeed();
 					ui.println("Speed upgraded. New speed: " + player.getShip().getSpeed() + " AU/s");
-				} else {
-					ui.println("Not enough credits.");
 				}
 				ui.pressAnyKey();
 				continue;
@@ -582,11 +655,9 @@ public class TheOuterRimGame {
 				int cost = getCargoUpgradeCost();
 				if (cost == 0) {
 					ui.println("Cargo is already fully upgraded.");
-				} else if (player.spendCredits(cost)) {
+				} else if (payForUpgrade(cost)) {
 					player.getShip().upgradeCargo();
 					ui.println("Cargo upgraded. New cargo capacity: " + player.getShip().getCargoCapacity() + " units");
-				} else {
-					ui.println("Not enough credits.");
 				}
 				ui.pressAnyKey();
 				continue;

@@ -12,7 +12,7 @@ public class StarterPlanet extends Planet {
         addMarketItem(new Food(12));
         addMarketItem(new Medicine(8));
         addMarketItem(new Machinery(4));
-        addMarketItem(new FuelCanister(80));
-        addMarketItem(new ShipParts(4));
+        addMarketItem(new FuelCanister(6));
+        addMarketItem(new ShipParts(1));
     }
 }

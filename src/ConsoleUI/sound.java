@@ -6,12 +6,17 @@ import java.io.File;
 
 public class sound {
     private static Clip musicClip;
+    private static boolean soundDisabled;
+    private static boolean warnedOnce;
 
     public static void playSound(String filePath) {
+        if (soundDisabled) {
+            return;
+        }
         try {
-            File soundFile = new File(filePath);
-            if (!soundFile.exists()) {
-                soundFile = new File("src/" + filePath);
+            File soundFile = getSoundFile(filePath);
+            if (soundFile == null) {
+                return;
             }
 
             AudioInputStream audio = AudioSystem.getAudioInputStream(soundFile);
@@ -19,15 +24,18 @@ public class sound {
             clip.open(audio);
             clip.start();
         } catch (Exception e) {
-            System.err.println("Error playing sound: " + e.getMessage());
+            disableSound(e);
         }
     }
 
     public static void playLoop(String filePath) {
+        if (soundDisabled) {
+            return;
+        }
         try {
-            File soundFile = new File(filePath);
-            if (!soundFile.exists()) {
-                soundFile = new File("src/" + filePath);
+            File soundFile = getSoundFile(filePath);
+            if (soundFile == null) {
+                return;
             }
 
             AudioInputStream audio = AudioSystem.getAudioInputStream(soundFile);
@@ -37,14 +45,33 @@ public class sound {
             musicClip.loop(Clip.LOOP_CONTINUOUSLY);
             musicClip.start();
         } catch (Exception e) {
-            System.err.println("Error playing sound: " + e.getMessage());
+            disableSound(e);
+        }
+    }
+
+    private static File getSoundFile(String filePath) {
+        File soundFile = new File(filePath);
+        if (!soundFile.exists()) {
+            soundFile = new File("src/" + filePath);
+        }
+        if (!soundFile.exists()) {
+            return null;
+        }
+        return soundFile;
+    }
+
+    private static void disableSound(Exception e) {
+        soundDisabled = true;
+        if (!warnedOnce) {
+            System.err.println("Audio disabled: " + e.getMessage());
+            warnedOnce = true;
         }
     }
 
     public static void sfxPrint() {
         playSound("Sounds/printSound.wav");
     }
-    
+
     public static void sfxContinue() {
         playSound("Sounds/continue.wav");
     }
