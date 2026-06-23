@@ -2,6 +2,7 @@ package News;
 
 public abstract class GalacticNews {
     private String headline;
+    // Only one item is affected at a time so the player can quickly read the market shift.
     private String affectedItem;
     private double priceMultiplier;
 
@@ -28,6 +29,7 @@ public abstract class GalacticNews {
     }
 
     public static GalacticNews randomNews() {
+        // News changes trade routes by making one good unusually good or bad for a while.
         int news = (int) (Math.random() * 4);
 
         if (news == 0) {

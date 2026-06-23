@@ -16,6 +16,7 @@ public final class ui {
 
     private ui() { }
 
+    // The game and pause prompts share one scanner so piped input does not break.
     public static Scanner getScanner() {
         return scanner;
     }

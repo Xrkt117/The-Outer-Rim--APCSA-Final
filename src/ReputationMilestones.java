@@ -3,6 +3,7 @@ import ConsoleUI.ui;
 import Planets.Planet;
 
 public class ReputationMilestones {
+    // These lists and flags stop the same achievement from paying reputation twice.
     private ArrayList<String> visitedPlanets;
     private int totalCreditsEarned;
     private int profitableRoutes;
@@ -25,12 +26,14 @@ public class ReputationMilestones {
 
     public void startAt(String planetName) {
         visitedPlanets.clear();
+        // Starting planet should not count as a discovery reward.
         visitedPlanets.add(planetName);
     }
 
     public int checkPlanetDiscovery(Planet planet) {
         int reputation = 0;
 
+        // Exploration rewards are returned to the main game so it can update the player.
         if (!visitedPlanets.contains(planet.getName())) {
             visitedPlanets.add(planet.getName());
             ui.println("New planet visited!");
@@ -64,6 +67,7 @@ public class ReputationMilestones {
 
     public int recordCreditsEarned(int credits) {
         int reputation = 0;
+        // This tracks total sales over the whole run, not current credits on hand.
         totalCreditsEarned += credits;
 
         if (totalCreditsEarned >= 1000 && !oneThousandCreditsReached) {
@@ -92,6 +96,7 @@ public class ReputationMilestones {
 
     public int recordTradeRoute() {
         int reputation = 0;
+        // A profitable route means the player sold above the normal base value.
         profitableRoutes++;
 
         if (profitableRoutes >= 1 && !firstRouteReached) {

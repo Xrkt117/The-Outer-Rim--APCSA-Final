@@ -6,6 +6,7 @@ import java.io.File;
 
 public class sound {
     private static Clip musicClip;
+    // If one sound fails on this machine, skip the rest instead of spamming errors.
     private static boolean soundDisabled;
     private static boolean warnedOnce;
 
@@ -50,6 +51,7 @@ public class sound {
     }
 
     private static File getSoundFile(String filePath) {
+        // Running from the project root and running from compiled classes use different paths.
         File soundFile = new File(filePath);
         if (!soundFile.exists()) {
             soundFile = new File("src/" + filePath);

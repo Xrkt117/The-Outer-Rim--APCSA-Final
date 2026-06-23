@@ -67,9 +67,12 @@ public class TheOuterRimGame {
                 case 2:
                     flush();
                     ui.println("--- Tips & Tricks ---");
-                    ui.println("- Make sure you have enough fuel before long trips.");
-                    ui.println("- Keep ~10% of credits as an emergency buffer.");
-                    ui.println("- Prioritize cargo upgrades early for bigger per-trip profits.");
+                    ui.println("- A Fuel Canister (5 fuel) can be bought and stored in cargo and used to refuel at any port.");
+                    ui.println("- Ship Parts are required (plus credits) to install ship upgrades, keep at least one per upgrade.");
+                    ui.println("- Upgrade cargo capacity early to increase profit per trip; larger hauls beat many small runs.");
+                    ui.println("- Use Market News headlines to spot high-demand markets before you commit to a route.");
+                    ui.println("- Keep ~10% of your credits as an emergency buffer (refuel, repairs, or last-minute upgrades).");
+                    ui.println("- Check destination requirements: some outposts and Outer Worlds need fuel-system upgrades.");
                     ui.println("");
                     ui.pressAnyKey();
                     break;
@@ -77,7 +80,7 @@ public class TheOuterRimGame {
                     flush();
                     ui.println("Author: Matvii Tsariuk");
                     ui.println("Course: APCSA — Final Project");
-                    ui.println("Version: 1.0");
+                    ui.println("Version: 2.0");
                     ui.println("");
                     ui.println(
                             "Author's note: This project demonstrates OOP concepts: inheritance, polymorphism, and encapsulation.");

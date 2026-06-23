@@ -3,6 +3,7 @@ import Ships.Ship;
 public class Player {
     private String name;
     private int credits;
+    // Reputation unlocks titles and is built from travel, money earned, and routes.
     private int reputation;
     private Ship ship;
 
@@ -31,6 +32,7 @@ public class Player {
     }
 
     public boolean spendCredits(int amount) {
+        // Returning false lets menus stop a purchase before changing cargo or upgrades.
         if (credits >= amount) {
             credits -= amount;
             return true;
@@ -49,6 +51,7 @@ public class Player {
     }
 
     public String getReputationTitle() {
+        // Titles give the player visible progress even before the final win.
         if (reputation >= 1000) {
             return "Renowned Trader of the Outer Rim";
         } else if (reputation >= 750) {

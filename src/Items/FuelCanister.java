@@ -1,6 +1,7 @@
 package Items;
-// Medicine item (empty shell)
+
 public class FuelCanister extends Item {
+    // One cargo unit refills this much ship fuel when used from the ship console.
     private int fuelAmount = 5;
 
     public FuelCanister(int quantity) {

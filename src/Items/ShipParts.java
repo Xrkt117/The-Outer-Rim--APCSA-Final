@@ -1,8 +1,9 @@
 package Items;
-// Medicine item (empty shell)
+
 public class ShipParts extends Item {
 
     public ShipParts(int quantity) {
+        // Upgrades consume these, so markets keep the stock low.
         super(
             "Ship Parts",
             65,

@@ -4,6 +4,7 @@ package Ships;
 public class StarterShip extends Ship {
 
     public StarterShip() {
+        // Small starting stats force the player to trade locally before reaching far worlds.
         super(
             "Starter Ship",
             20,   // starting fuel

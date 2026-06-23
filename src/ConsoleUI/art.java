@@ -1,7 +1,7 @@
 package ConsoleUI;
 
 public class art {
-    // make delay static so static methods can call it
+    // Art methods are static because they are just reusable console scenes.
     public static void delay(long time) {
         try {
             Thread.sleep(time);
@@ -11,7 +11,7 @@ public class art {
     }
 
     public static void starterShip() {
-        // print each line separately and pause between them (for the reveal)
+        // The ship reveal prints line by line so the intro feels less abrupt.
         String[] lines = {
             "",
             "                _____.-----._____",

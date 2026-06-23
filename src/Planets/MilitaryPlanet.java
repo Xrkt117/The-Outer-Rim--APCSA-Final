@@ -10,6 +10,7 @@ public class MilitaryPlanet extends Planet {
 
     @Override
     public void generateMarket() {
+        // Far worlds need supplies, but fuel and ship parts stay scarce.
         addMarketItem(new Food(6));
         addMarketItem(new Medicine(8));
         addMarketItem(new Electronics(4));

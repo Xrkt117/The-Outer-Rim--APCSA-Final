@@ -10,6 +10,7 @@ public class TradePlanet extends Planet {
 
     @Override
     public void generateMarket() {
+        // Trade outposts are better stocked with finished goods and a few rare parts.
         addMarketItem(new ConsumerGoods(10));
         addMarketItem(new Electronics(6));
         addMarketItem(new Machinery(5));

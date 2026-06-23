@@ -5,6 +5,7 @@ import Items.Item;
 import ConsoleUI.*;
 
 public abstract class Ship {
+    // Cargo stores item stacks, while the game checks total item quantity before buying.
     private ArrayList<Item> cargo;
     private String name;
     private int fuel;
@@ -62,6 +63,7 @@ public abstract class Ship {
 
 
     public void refuel(int amount) {
+        // Refueling never goes above the current max tank size.
         if(fuel + amount > maxFuel) {
             fuel = maxFuel;
         } else {
@@ -70,6 +72,7 @@ public abstract class Ship {
     }
 
     public boolean upgradeFuel() {
+        // Upgrade levels are capped so the starter ship stays balanced.
         if (fuelUpgradeLevel < 2) {
             fuelUpgradeLevel++;
             maxFuel += 20;
@@ -101,6 +104,7 @@ public abstract class Ship {
     }
 
     public boolean addItem(Item item) {
+        // Market code checks quantity capacity first; this is a final stack-count guard.
         if(cargo.size() < cargoCapacity ) {
             cargo.add(item);
             return true;
@@ -121,6 +125,7 @@ public abstract class Ship {
     }
 
     public void useFuel(int amount) {
+        // Travel checks fuel before calling this, so this should only subtract valid trips.
         if (amount > fuel) {
             System.out.println("Not enough fuel!");
         } else {

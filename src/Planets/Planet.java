@@ -6,6 +6,8 @@ import Items.Item;
 public abstract class Planet {
     private String name;
     private String description;
+    // Distance is measured from Earth. Travel cost is based on the difference
+    // between the current planet distance and the destination distance.
     private int distance;
     private ArrayList<Item> market;
 
@@ -14,6 +16,7 @@ public abstract class Planet {
         this.description = description;
         this.distance = distance;
         this.market = new ArrayList<>();
+        // Subclasses fill their own stock so each planet type feels different.
         generateMarket();
     }
     public String getName() {
@@ -36,7 +39,7 @@ public abstract class Planet {
         market.add(item);
     }
 
-     public void displayMarket() {
+    public void displayMarket() {
         for (int i = 0; i < market.size(); i++) {
             Item item = market.get(i);
             System.out.println("[" + (i + 1) + "] " + item.getName() + " x" + item.getQuantity() + " | Price: " + item.getBasePrice());

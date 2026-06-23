@@ -1,11 +1,10 @@
 package Items;
-// Abstract Item class (empty shell)
+
 public abstract class Item {
     private String name;
     public String description;
     private int basePrice;
     private int quantity;
-    //private String description;
 
     public Item(String name, int price, int quantity, String description) {
         this.name = name;
