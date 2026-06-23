@@ -266,10 +266,16 @@ public class TheOuterRimGame {
         int choice = readIntLoop();
         switch (choice) {
             case 1: {
-                ui.println("Enter item number to buy: ");
+                flush();
+                ui.println("--- " + currentPlanet.getName() + " Market ---\n");
+                ui.printSoundln("Enter item number to buy: ");
+                ui.println("Credits: " + player.getCredits() + "\n");
+                ui.println("Market News: " + currentNews.getHeadline() + "\n");
+
                 int itemNumber = readIntLoop();
 
                 if (itemNumber <= 0 || itemNumber > market.size()) {
+                    sound.sfxError();
                     ui.println("Invalid item number.");
                     ui.pressAnyKey();
                     marketConsole();
@@ -277,7 +283,7 @@ public class TheOuterRimGame {
                 }
 
                 Items.Item selectedItem = market.get(itemNumber - 1);
-                ui.println("Enter quantity: ");
+                ui.printSoundln("Enter quantity: ");
                 int quantity = readIntLoop();
 
                 if (quantity <= 0) {
